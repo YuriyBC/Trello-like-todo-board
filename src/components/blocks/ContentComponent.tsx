@@ -1,18 +1,70 @@
 import * as React from 'react';
-// import CartComponent from '../CartComponent'
+import ColumnComponent from '../ColumnComponent'
+import AddColumnButton from '../AddColumnButton'
+
 
 interface ContentComponentInterface {
     columnList: Array<{
         id: number,
         title: string,
-        carts: object
-    }>
+        carts: Array<object>
+    }>,
+    addColumn: () => void,
+    columnTitleChange: any
 }
 
-export function ContentComponent (props: ContentComponentInterface) {
-    const itemList: any = props.columnList.map(cart => {
-        return <div key={cart.id}>{cart.id}</div>
-    });
-    return itemList
+export class ContentComponent  extends React.Component <any, any> {
+    constructor (props: ContentComponentInterface) {
+        super(props);
+        this.state = {
+            isAddColumnButtonEditable: false,
+            formRef: React.createRef()
+        };
+        this.toggleEditMode = this.toggleEditMode.bind(this);
+        this.addColumn = this.addColumn.bind(this)
+    }
+
+    toggleEditMode (forceValue?: boolean): void {
+        this.setState({
+            isAddColumnButtonEditable: typeof forceValue === 'boolean' ? forceValue : !this.state.isAddColumnButtonEditable
+        })
+    }
+
+    addColumn () {
+        const columnTitle = this.state.formRef.current.value;
+        if (columnTitle) {
+            this.props.addColumn(this.state.formRef.current.value);
+            this.state.formRef.current.value = ''
+        } else {
+            const RETURN_COLOR_TIME = 500;
+            const formEl = this.state.formRef.current;
+            const initialColor = this.state.formRef.current.style.boxShadow;
+
+            formEl.style.boxShadow = 'inset 0 0 0 2px red';
+            setTimeout(() => {formEl.style.boxShadow = initialColor}, RETURN_COLOR_TIME)
+        }
+    }
+
+    render () {
+        const itemList: any = this.props.columnList.map((cart: {
+            title: string,
+            carts: Array<object>,
+            id: number
+        }) => {
+            return <ColumnComponent title={cart.title}
+                                    carts={cart.carts}
+                                    columnTitleChange={this.props.columnTitleChange}
+                                    key={cart.id}
+                                    id={cart.id}/>
+        });
+
+        return <div className="columns-wrapper">
+            {itemList}
+            <AddColumnButton toggleEditMode={this.toggleEditMode}
+                             isAddColumnButtonEditable={this.state.isAddColumnButtonEditable}
+                             formRef={this.state.formRef}
+                             addColumn={this.addColumn} />
+        </div>
+    }
 }
 

@@ -1,9 +1,11 @@
 import * as React from "react";
 
-export interface HelloProps { compiler: string; framework: string; }
+interface CartComponentProps {
+    title: string
+}
 
-export class CartComponent extends React.Component {
-    render() {
-
-    }
+export default function CartComponent (props:  CartComponentProps) {
+ return <div className="column-cart">
+            <span>{props.title}</span>
+         </div>
 }
