@@ -20,22 +20,22 @@ export default function AddColumnButton (props: AddColumnButtonProps) {
 
     function getAddColumnButton () {
         const isEditable: boolean = props.isAddColumnButtonEditable;
-        const defaultMode = <div onClick={props.toggleEditMode}
-                                 className="columns-wrapper__add__initial">
+        const defaultMode =
+        <div onClick={props.toggleEditMode}
+             className="columns-wrapper__add__initial">
             <img src={imgAdd} alt="add icon"/>
-            <span>
-                Добавить еще одну колонку
-            </span>
+            <span>Добавить еще одну колонку</span>
         </div>;
 
-        const editableMode = <div className="columns-wrapper__add__edit">
+        const editableMode =
+        <div className="columns-wrapper__add__edit">
             <div>
                 <input type="text"
                        ref={props.formRef}
                        placeholder="Ввести заголовок списка"/>
             </div>
             <div>
-                <div className="columns-wrapper__add__edit-button"
+                <div className="columns-wrapper__add__edit-button button-form__green"
                      onClick={props.addColumn}>
                     Добавить список</div>
                 <img onClick={props.toggleEditMode}

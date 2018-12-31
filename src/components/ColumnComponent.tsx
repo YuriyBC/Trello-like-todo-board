@@ -6,15 +6,20 @@ interface ColumnComponentProps {
     title: string,
     id: number,
     carts: Array<object>,
-    columnTitleChange: any
+    columnTitleChange: any,
+    addCart: any,
+    editCart: () => void
 }
 
-export default class ColumnComponent extends React.Component <any> {
+export default class ColumnComponent extends React.Component <any, any> {
     constructor (props: ColumnComponentProps) {
         super(props);
         this.state = {
-            isTitleEditMode: false
-        }
+            isTitleEditMode: false,
+            isCartCreationMode: false,
+            textAreaRef: React.createRef()
+        };
+        this.toggleCartCreationMode = this.toggleCartCreationMode.bind(this)
     }
 
     resizeTextArea (ev: any): void {
@@ -35,10 +40,22 @@ export default class ColumnComponent extends React.Component <any> {
         el.style.height = (el.scrollHeight)+"px";
     }
 
+    toggleCartCreationMode () {
+        const columnId = this.props.id;
+        this.props.addCart(columnId);
+    }
+
     render () {
-        const CartList = this.props.carts.map((cart: {title: string}, id: number) => {
-            return <CartComponent key={id} title={cart.title}/>
+        const CartList = this.props.carts.map((cart: {
+            title: string,
+            id: number,
+            text: string}, id: number) => {
+            return <CartComponent key={id}
+                                  editCart={() => {this.props.editCart(this.props.id, cart.id)}}
+                                  title={cart.title}
+                                  text={cart.text} />
         });
+
         return <div className="column">
             <div className="column-header">
                 <textarea onChange={(ev) => this.props.columnTitleChange(ev, this.props.id)}
@@ -51,7 +68,7 @@ export default class ColumnComponent extends React.Component <any> {
                 {CartList}
             </div>
             <div className="column-footer">
-                <span>Add a cart</span>
+                <span onClick={this.toggleCartCreationMode}>Add a cart...</span>;
             </div>
         </div>
     }

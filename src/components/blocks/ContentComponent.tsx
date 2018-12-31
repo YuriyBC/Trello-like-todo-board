@@ -2,13 +2,14 @@ import * as React from 'react';
 import ColumnComponent from '../ColumnComponent'
 import AddColumnButton from '../AddColumnButton'
 
-
 interface ContentComponentInterface {
     columnList: Array<{
         id: number,
         title: string,
         carts: Array<object>
     }>,
+    editCart: () => void,
+    addCart: () => void,
     addColumn: () => void,
     columnTitleChange: any
 }
@@ -46,24 +47,26 @@ export class ContentComponent  extends React.Component <any, any> {
     }
 
     render () {
-        const itemList: any = this.props.columnList.map((cart: {
+        const columnList: any = this.props.columnList.map((column: {
             title: string,
             carts: Array<object>,
             id: number
         }) => {
-            return <ColumnComponent title={cart.title}
-                                    carts={cart.carts}
+            return <ColumnComponent title={column.title}
+                                    editCart={this.props.editCart}
+                                    carts={column.carts}
+                                    addCart={this.props.addCart}
                                     columnTitleChange={this.props.columnTitleChange}
-                                    key={cart.id}
-                                    id={cart.id}/>
+                                    key={column.id}
+                                    id={column.id}/>
         });
 
         return <div className="columns-wrapper">
-            {itemList}
+            {columnList}
             <AddColumnButton toggleEditMode={this.toggleEditMode}
                              isAddColumnButtonEditable={this.state.isAddColumnButtonEditable}
                              formRef={this.state.formRef}
-                             addColumn={this.addColumn} />
+                             addColumn={this.props.addColumn} />
         </div>
     }
 }
