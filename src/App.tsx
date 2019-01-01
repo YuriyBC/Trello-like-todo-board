@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
-import './App.scss';
+import './styles/App.scss';
 
 import { HeaderComponent } from "./components/blocks/HeaderComponent";
 import { ContentComponent } from "./components/blocks/ContentComponent";
 import { UpdateCartModal } from './components/UpdateCartModal'
+import { CustomizeModalComponent } from './components/CustomizeModalComponent'
 import {
     ColumnModel,
     CartModel
@@ -14,23 +15,12 @@ import {
     storage
 } from './utils/methods'
 
-// [{
-//     id: 0,
-//     title: 'First columnsdcdjsnjkcdsnjkncsdcc',
-//     carts: [{
-//         id: 0,
-//         title: 'First cart',
-//         color: '',
-//         text: ''
-//     },
-//         {
-//             id: 1,
-//             title: 'Second cart',
-//             color: '',
-//             text: ''
-//         }
-//     ]
-// }]
+import {
+    UPDATE_CART,
+    ADD_NEW_CART,
+    CART_MODAL_WINDOW,
+    CUSTOMIZE_MODAL_WINDOW
+} from './utils/constants.js'
 
 class App extends Component <any, any> {
   constructor(props: object) {
@@ -41,6 +31,9 @@ class App extends Component <any, any> {
             isOpened: false,
             columnId: null,
             cartInfo: null
+        },
+        modalCustomize: {
+            isOpened: false
         }
     };
     this.editCart = this.editCart.bind(this);
@@ -49,6 +42,8 @@ class App extends Component <any, any> {
     this.columnTitleChange = this.columnTitleChange.bind(this);
     this.submitCartInfo = this.submitCartInfo.bind(this);
     this.closeModal = this.closeModal.bind(this);
+    this.removeCart = this.removeCart.bind(this);
+    this.showCustomizeModal = this.showCustomizeModal.bind(this);
   }
     columnTitleChange = function (this: App, ev: any, id: Number): void {
         this.setState({
@@ -64,15 +59,25 @@ class App extends Component <any, any> {
 
     saveStateInLocalStorage (): void {
         const store = this.state.columnList;
+        const backgroundColor = document.body.style.backgroundColor;
         storage('columnList', JSON.stringify(store));
+        storage('backgroundColor', backgroundColor);
     }
 
     componentDidMount () {
         let storageData: any = storage('columnList');
+        let backgroundColor: any = storage('backgroundColor');
+        let backgroundImage: any = storage('backgroundImage');
 
-        this.setState({
-            columnList: JSON.parse(storageData)
-        })
+        if (storageData) {
+            this.setState({columnList: JSON.parse(storageData)})
+        }
+        if (backgroundColor) {
+            document.body.style.backgroundColor = backgroundColor
+        }
+        if (backgroundImage) {
+            document.body.style.backgroundImage = `url(${backgroundImage})`
+        }
     }
 
     addColumn (title: string) {
@@ -100,13 +105,36 @@ class App extends Component <any, any> {
         });
     }
 
-    closeModal () {
+    closeModal (type: string) {
+        let stateField;
+        if (type === CART_MODAL_WINDOW) {
+            stateField = 'modalCart'
+        } else {
+            stateField = 'modalCustomize'
+        }
         this.setState({
-            modalCart: {
-                isOpened: !this.state.modalCart.isOpened,
+            [stateField]: {
+                isOpened: !this.state[stateField].isOpened,
                 cartInfo: null
             }
         });
+    }
+
+    removeCart (columnId: number, cartId: number) {
+        let currentState = [...this.state.columnList];
+        let updatedCartList = currentState.find((el: any) => el.id === columnId).carts.filter((cart: any) => {
+            return cart.id !== cartId
+        });
+        currentState.forEach((el) => {
+            if (el.id === columnId) {
+                el.carts = updatedCartList
+            }
+        });
+        this.setState({
+            columnList: currentState
+        });
+        this.closeModal(CART_MODAL_WINDOW);
+        setTimeout(() => {this.saveStateInLocalStorage.call(this)})
     }
 
     editCart (columnId: number, cartId: number) {
@@ -130,9 +158,9 @@ class App extends Component <any, any> {
                           cartId?: number,
                           columnId?: number,
                           type: string}) {
-        if (val.type === 'edit') {
+        if (val.type === UPDATE_CART) {
             updateCart.call(this)
-        } else {
+        } else if (val.type ===  ADD_NEW_CART) {
             addNewCart.call(this)
         }
 
@@ -154,7 +182,7 @@ class App extends Component <any, any> {
             this.setState({
                 columnList: currentState
             });
-            this.closeModal();
+            this.closeModal(CART_MODAL_WINDOW);
             setTimeout(() => {this.saveStateInLocalStorage.call(this)})
         }
 
@@ -178,9 +206,17 @@ class App extends Component <any, any> {
             this.setState({
                 columnList: currentState
             });
-            this.closeModal();
+            this.closeModal(CART_MODAL_WINDOW);
             setTimeout(() => {this.saveStateInLocalStorage.call(this)})
         }
+    }
+
+    showCustomizeModal () {
+        this.setState({
+            modalCustomize: {
+                isOpened: true
+            }
+        })
     }
 
 
@@ -188,19 +224,25 @@ class App extends Component <any, any> {
     const modalCart = this.state.modalCart.isOpened ?
         <UpdateCartModal columnId={this.state.modalCart.columnId}
                          cartInfo={this.state.modalCart.cartInfo}
-                         closeModal={this.closeModal}
+                         closeModal={() => this.closeModal(CART_MODAL_WINDOW)}
+                         removeCart={this.removeCart}
                          submitCartInfo={this.submitCartInfo}/> :
         null;
 
+     const modalCustomize = this.state.modalCustomize.isOpened ?
+        <CustomizeModalComponent closeModal={() => this.closeModal(CUSTOMIZE_MODAL_WINDOW)}/>
+         : null;
+
     return (
       <div className="App">
-        <HeaderComponent/>
+        <HeaderComponent showCustomizeModal={this.showCustomizeModal}/>
         <ContentComponent columnTitleChange={this.columnTitleChange}
                           addCart={this.addCart}
                           editCart={this.editCart}
                           addColumn={this.addColumn}
                           columnList={this.state.columnList}/>
           {modalCart}
+          {modalCustomize}
       </div>
     );
   }

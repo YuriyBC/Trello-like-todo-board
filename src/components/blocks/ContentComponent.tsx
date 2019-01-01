@@ -66,7 +66,7 @@ export class ContentComponent  extends React.Component <any, any> {
             <AddColumnButton toggleEditMode={this.toggleEditMode}
                              isAddColumnButtonEditable={this.state.isAddColumnButtonEditable}
                              formRef={this.state.formRef}
-                             addColumn={this.props.addColumn} />
+                             addColumn={this.addColumn} />
         </div>
     }
 }

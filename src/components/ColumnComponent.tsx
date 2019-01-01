@@ -70,7 +70,7 @@ export default class ColumnComponent extends React.Component <any, any> {
                 {CartList}
             </div>
             <div className="column-footer">
-                <span onClick={this.toggleCartCreationMode}>Add a cart...</span>;
+                <span onClick={this.toggleCartCreationMode}>Add a cart...</span>
             </div>
         </div>
     }

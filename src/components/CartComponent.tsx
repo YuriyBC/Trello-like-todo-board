@@ -10,6 +10,13 @@ interface CartComponentProps {
 
 export default function CartComponent (props: CartComponentProps) {
  const style = props.color ? {"backgroundColor": props.color} : {};
+
+ function trimString (string: string) {
+     let MAX_LENGTH = 350;
+     return string.length > MAX_LENGTH ?
+         string.substring(0, MAX_LENGTH) + "..." : string;
+ }
+
  return <div className="column-cart"
              style={style}>
             <img className="column-cart__icon"
@@ -17,6 +24,6 @@ export default function CartComponent (props: CartComponentProps) {
                  src={imgEdit}
                  alt=""/>
             <span>{props.title}</span>
-            <p>{props.text}</p>
+            <p>{trimString(props.text)}</p>
          </div>
 }

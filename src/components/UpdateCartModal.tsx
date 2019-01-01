@@ -3,7 +3,12 @@ import '../styles/ModalComponent.scss'
 import ImgClose from '../img/ic-close.png'
 import {
     UPDATE_CART,
-    ADD_NEW_CART
+    ADD_NEW_CART,
+    GREEN_COLOR,
+    YELLOW_COLOR,
+    ORANGE_COLOR,
+    RED_COLOR,
+    BLUE_COLOR
 } from '../utils/constants.js'
 
 
@@ -20,6 +25,7 @@ interface UpdateCartModalInterface {
     submitCartInfo: () => void;
     columnId?: number,
     closeModal: () => void,
+    removeCart: () => void,
     cartInfo?: {
         text: string,
         title: string,
@@ -41,13 +47,13 @@ export class UpdateCartModal extends React.Component <any, any> {
         this.setForm = this.setForm.bind(this);
         this.setColor = this.setColor.bind(this);
         this.submitResult = this.submitResult.bind(this);
+        this.removeCart = this.removeCart.bind(this);
         this.isFormsValid = this.isFormsValid.bind(this);
     }
 
     componentDidMount () {
-        console.log(this.state.type)
         if (this.state.type === UPDATE_CART) {
-            const {color, title, text} = this.state.cartInfo;
+            const {color, title, text} = this.props.cartInfo;
             this.setState({
                 color: color || null,
                 title: title || '',
@@ -63,9 +69,16 @@ export class UpdateCartModal extends React.Component <any, any> {
     }
 
     setColor (color: any) {
+        const colorToSet = this.state.color === color ? '' : color;
         this.setState({
-            color
+            color: colorToSet
         });
+    }
+
+    removeCart () {
+        const {id} = this.props.cartInfo
+        const {columnId} = this.props
+        this.props.removeCart(columnId, id)
     }
 
     isFormsValid () {
@@ -99,15 +112,15 @@ export class UpdateCartModal extends React.Component <any, any> {
     }
 
     render () {
-        let titlePlaceholder: string = "Введите заголовок для карточки";
-        let textPlaceholder: string = "Введите текст сообщения";
+        let titlePlaceholder: string = "Enter title for the cart";
+        let textPlaceholder: string = "Enter text message";
 
         const availibleColors: availibleColorsInterface = {
-            green: "#61BD4F",
-            yellow: "#F2D600",
-            red: "#EB5A46",
-            orange: "#FF9F1A",
-            blue: "#0079BF"
+            green: GREEN_COLOR,
+            yellow: YELLOW_COLOR,
+            red: ORANGE_COLOR,
+            orange: RED_COLOR,
+            blue: BLUE_COLOR
         };
 
         let x = this;
@@ -129,7 +142,7 @@ export class UpdateCartModal extends React.Component <any, any> {
                          src={ImgClose}
                          alt=""/>
                     <div className="modal-field">
-                        <p>Заголовок</p>
+                        <p>Title</p>
                         <input placeholder={titlePlaceholder}
                                value={this.state.title}
                                onChange={($ev) => this.setForm($ev, 'title')}
@@ -139,7 +152,7 @@ export class UpdateCartModal extends React.Component <any, any> {
                     </div>
 
                     <div className="modal-field">
-                        <p>Сообщение</p>
+                        <p>Text message</p>
                         <textarea onChange={($ev) => this.setForm($ev, 'text')}
                                   value={this.state.text}
                                   className="form"
@@ -147,13 +160,19 @@ export class UpdateCartModal extends React.Component <any, any> {
                     </div>
 
                     <div className="modal-field">
-                        <p>Выберите цвет</p>
+                        <p>Choose a color</p>
                         {colorList}
                     </div>
 
                     <div className="model__container-footer">
+                        <div className="model__button button-form__red"
+                             onClick={this.removeCart}>
+                            Remove
+                        </div>
                         <div className="model__button button-form__green"
-                             onClick={this.submitResult}>Сохранить</div>
+                             onClick={this.submitResult}>
+                            Save
+                        </div>
                     </div>
                 </div>
             </div>

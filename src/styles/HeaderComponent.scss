@@ -62,6 +62,7 @@
   z-index: 1;
 }
 .header-buttons__add {
+  position: relative;
   height: 32px;
   width: 32px;
   background: hsla(0,0%,100%,.3) url('../img/ic-add.png') no-repeat;
@@ -71,8 +72,44 @@
   transition: .1s ease;
   cursor: pointer;
   z-index: 1;
+}
+
+.header-buttons__add__shadow {
+  position: absolute;
+  height: 32px;
+  width: 32px;
+  left: 0;
+  top: 0;
+  transition: 0.3s;
   &:hover {
-    background-color: hsla(0,0%,100%,.4);
+    background-color: hsla(0,0%,100%,.2);
     box-shadow: none;
   }
+  &:active {
+    filter: brightness(150%);
+  }
 }
+
+.header-buttons__drop-content {
+  position: absolute;
+  top: 40px;
+  margin-left: -140px;
+  width: 170px;
+  border-radius: 3px;
+  color: #17394d;
+  background-color: #dfe3e6;
+  box-sizing: border-box;
+  p {
+    margin: 0;
+    font-weight: bold;
+    padding: 5px 10px;
+    cursor: pointer;
+    &:hover {
+      filter: brightness(150%);
+    }
+    &:active {
+      opacity: 0.8;
+    }
+  }
+}
+

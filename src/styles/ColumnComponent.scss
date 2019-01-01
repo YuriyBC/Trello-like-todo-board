@@ -1,5 +1,4 @@
 .column {
-
   background-color: #dfe3e6;
   border-radius: 3px;
   box-sizing: border-box;
@@ -10,6 +9,9 @@
   white-space: normal;
 }
 
+.columns-wrapper__add {
+  clear: left;
+}
 .column, .columns-wrapper__add {
   float: left;
   width: 320px;
@@ -101,6 +103,9 @@
   span, p {
     padding: 5px 5px;
   }
+  p {
+    margin: 0;
+  }
   span {
     display: block;
     margin: 0 0 4px;
@@ -168,7 +173,7 @@
   }
 }
 
-.button-form__green {
+.button-form__green, .button-form__red {
   display: inline;
   cursor: pointer;
   box-sizing: border-box;
@@ -188,6 +193,10 @@
   &:active {
     filter: brightness(80%);
   }
+}
+
+.button-form__red {
+  background-color: #EB5A46;
 }
 
 .columns-wrapper {
@@ -242,8 +251,6 @@
       }
       &>div:nth-child(2) {
         padding: 10px 0 6px 0;
-        .columns-wrapper__add__edit-button {
-        }
         img {
           width: 13px;
           height: 13px;
