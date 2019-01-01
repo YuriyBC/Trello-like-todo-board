@@ -1,6 +1,11 @@
 import * as React from 'react'
 import '../styles/ModalComponent.scss'
 import ImgClose from '../img/ic-close.png'
+import {
+    UPDATE_CART,
+    ADD_NEW_CART
+} from '../utils/constants.js'
+
 
 interface availibleColorsInterface {
     green: string;
@@ -14,7 +19,13 @@ interface availibleColorsInterface {
 interface UpdateCartModalInterface {
     submitCartInfo: () => void;
     columnId?: number,
-    closeModal: () => void
+    closeModal: () => void,
+    cartInfo?: {
+        text: string,
+        title: string,
+        color: string,
+        id: number
+    }
 }
 
 export class UpdateCartModal extends React.Component <any, any> {
@@ -24,12 +35,25 @@ export class UpdateCartModal extends React.Component <any, any> {
             color: '',
             title: '',
             text: '',
-            modalRef: React.createRef()
+            modalRef: React.createRef(),
+            type: this.props.cartInfo ? UPDATE_CART : ADD_NEW_CART
         };
         this.setForm = this.setForm.bind(this);
         this.setColor = this.setColor.bind(this);
         this.submitResult = this.submitResult.bind(this);
         this.isFormsValid = this.isFormsValid.bind(this);
+    }
+
+    componentDidMount () {
+        console.log(this.state.type)
+        if (this.state.type === UPDATE_CART) {
+            const {color, title, text} = this.state.cartInfo;
+            this.setState({
+                color: color || null,
+                title: title || '',
+                text: text || ''
+            });
+        }
     }
 
     setForm (ev: any, field: string) {
@@ -67,7 +91,9 @@ export class UpdateCartModal extends React.Component <any, any> {
               color: this.state.color,
               text: this.state.text,
               title: this.state.title,
-              columnId: this.props.columnId
+              cartId: this.props.cartInfo ? this.props.cartInfo.id : null,
+              columnId: this.props.columnId,
+              type: this.state.type
           })
         }
     }
@@ -115,6 +141,7 @@ export class UpdateCartModal extends React.Component <any, any> {
                     <div className="modal-field">
                         <p>Сообщение</p>
                         <textarea onChange={($ev) => this.setForm($ev, 'text')}
+                                  value={this.state.text}
                                   className="form"
                                   placeholder={textPlaceholder}/>
                     </div>

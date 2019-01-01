@@ -49,10 +49,12 @@ export default class ColumnComponent extends React.Component <any, any> {
         const CartList = this.props.carts.map((cart: {
             title: string,
             id: number,
+            color: string,
             text: string}, id: number) => {
             return <CartComponent key={id}
                                   editCart={() => {this.props.editCart(this.props.id, cart.id)}}
                                   title={cart.title}
+                                  color={cart.color}
                                   text={cart.text} />
         });
 

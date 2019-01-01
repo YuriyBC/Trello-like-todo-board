@@ -39,7 +39,8 @@ class App extends Component <any, any> {
         columnList: [],
         modalCart: {
             isOpened: false,
-            columnId: null
+            columnId: null,
+            cartInfo: null
         }
     };
     this.editCart = this.editCart.bind(this);
@@ -102,43 +103,91 @@ class App extends Component <any, any> {
     closeModal () {
         this.setState({
             modalCart: {
-                isOpened: !this.state.modalCart.isOpened
+                isOpened: !this.state.modalCart.isOpened,
+                cartInfo: null
             }
         });
     }
 
     editCart (columnId: number, cartId: number) {
-        alert(columnId + ' ' + cartId)
-    }
-
-    submitCartInfo (val: {text: string, color: string, title: string, columnId?: number}) {
-        const id = calculateNextId(this.state.columnList.filter((el: {id: number}) => el.id === val.columnId)[0].carts);
-        const newCart: any = new CartModel({
-            color: val.color,
-            text: val.text,
-            title: val.title,
-            columnId: val.columnId,
-            id
-        });
-
-        const currentState =  [...this.state.columnList];
-        currentState.map((el: {id: number, carts: Array<object>}) => {
-            if (el.id === val.columnId) {
-              el.carts.push(newCart);
-            }
-            return el
+        const cartToEdit = this.state.columnList.find((el: any) => {
+            return el.id === columnId
+        }).carts.find((el: any) => {
+           return el.id ===  cartId
         });
         this.setState({
-            columnList: currentState
+            modalCart: {
+                columnId,
+                cartInfo: cartToEdit,
+                isOpened: !this.state.modalCart.isOpened
+            }
         });
-        this.closeModal();
-        setTimeout(() => {this.saveStateInLocalStorage.call(this)})
+    }
+
+    submitCartInfo (val: {text: string,
+                          color: string,
+                          title: string,
+                          cartId?: number,
+                          columnId?: number,
+                          type: string}) {
+        if (val.type === 'edit') {
+            updateCart.call(this)
+        } else {
+            addNewCart.call(this)
+        }
+
+        function updateCart (this: any) {
+            const currentState = [...this.state.columnList];
+            currentState.map((el: any) => {
+                if (el.id === val.columnId) {
+                    el.carts.map((el: any) => {
+                        if (el.id === val.cartId) {
+                            el.color = val.color;
+                            el.title = val.title;
+                            el.text = val.text;
+                        }
+                        return el
+                    })
+                }
+                return el
+            });
+            this.setState({
+                columnList: currentState
+            });
+            this.closeModal();
+            setTimeout(() => {this.saveStateInLocalStorage.call(this)})
+        }
+
+        function addNewCart (this: any) {
+            const id = calculateNextId(this.state.columnList.filter((el: {id: number}) => el.id === val.columnId)[0].carts);
+            const newCart: any = new CartModel({
+                color: val.color,
+                text: val.text,
+                title: val.title,
+                columnId: val.columnId,
+                id
+            });
+
+            const currentState =  [...this.state.columnList];
+            currentState.map((el: {id: number, carts: Array<object>}) => {
+                if (el.id === val.columnId) {
+                    el.carts.push(newCart);
+                }
+                return el
+            });
+            this.setState({
+                columnList: currentState
+            });
+            this.closeModal();
+            setTimeout(() => {this.saveStateInLocalStorage.call(this)})
+        }
     }
 
 
   render(): React.ReactNode {
     const modalCart = this.state.modalCart.isOpened ?
         <UpdateCartModal columnId={this.state.modalCart.columnId}
+                         cartInfo={this.state.modalCart.cartInfo}
                          closeModal={this.closeModal}
                          submitCartInfo={this.submitCartInfo}/> :
         null;
