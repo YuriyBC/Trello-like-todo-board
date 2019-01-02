@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import './styles/App.scss';
-
 import { HeaderComponent } from "./components/blocks/HeaderComponent";
 import { ContentComponent } from "./components/blocks/ContentComponent";
 import { UpdateCartModal } from './components/UpdateCartModal'
@@ -22,20 +21,28 @@ import {
     CUSTOMIZE_MODAL_WINDOW
 } from './utils/constants.js'
 
+
+const initialState = {
+    columnList: [{
+        id: 0,
+        title: 'Stuff To Try (this is a list)',
+        carts: []
+    }],
+    modalCart: {
+        isOpened: false,
+        columnId: null,
+        cartInfo: null
+    },
+    modalCustomize: {
+        isOpened: false
+    },
+    historyStep: 0
+};
+
 class App extends Component <any, any> {
-  constructor(props: object) {
+  constructor(props) {
     super(props);
-    this.state = {
-        columnList: [],
-        modalCart: {
-            isOpened: false,
-            columnId: null,
-            cartInfo: null
-        },
-        modalCustomize: {
-            isOpened: false
-        }
-    };
+    this.state = initialState;
     this.editCart = this.editCart.bind(this);
     this.addCart = this.addCart.bind(this);
     this.addColumn = this.addColumn.bind(this);
@@ -44,6 +51,10 @@ class App extends Component <any, any> {
     this.closeModal = this.closeModal.bind(this);
     this.removeCart = this.removeCart.bind(this);
     this.showCustomizeModal = this.showCustomizeModal.bind(this);
+    this.onChangeDrag = this.onChangeDrag.bind(this);
+    this.setStateFromHistory = this.setStateFromHistory.bind(this);
+    this.componentWillUnmounted = this.componentWillUnmounted.bind(this);
+    this.detectCtrlCombination = this.detectCtrlCombination.bind(this);
   }
     columnTitleChange = function (this: App, ev: any, id: Number): void {
         this.setState({
@@ -57,17 +68,43 @@ class App extends Component <any, any> {
 
     };
 
+    componentDidUpdate () {
+        this.saveStateInLocalStorage()
+    }
+
     saveStateInLocalStorage (): void {
         const store = this.state.columnList;
         const backgroundColor = document.body.style.backgroundColor;
+
         storage('columnList', JSON.stringify(store));
         storage('backgroundColor', backgroundColor);
     }
 
+    memorizeEventInHistory (): void {
+        let storageData: any = storage('history');
+        storageData = JSON.parse(storageData);
+        storageData.push(this.state);
+        storage('history', JSON.stringify(storageData));
+
+        this.setState({historyStep: storageData.length - 1})
+    }
+
+    componentWillUnmounted () {
+        let storageData: any = storage('history');
+        storageData = JSON.parse(storageData);
+        storageData = storageData.slice(0, this.state.historyStep + 1);
+        storage('history', JSON.stringify(storageData));
+    }
+
     componentDidMount () {
+        if (!storage('history')) {
+            storage('history', JSON.stringify([]))
+        }
+
         let storageData: any = storage('columnList');
         let backgroundColor: any = storage('backgroundColor');
         let backgroundImage: any = storage('backgroundImage');
+        let storageHistory: any = storage('history');
 
         if (storageData) {
             this.setState({columnList: JSON.parse(storageData)})
@@ -78,6 +115,13 @@ class App extends Component <any, any> {
         if (backgroundImage) {
             document.body.style.backgroundImage = `url(${backgroundImage})`
         }
+        if (storageHistory) {
+            storageHistory = JSON.parse(storageHistory);
+            this.setState({historyStep: storageHistory.length - 1});
+            if (!storageHistory.length) {this.memorizeEventInHistory()}
+        }
+        window.addEventListener('beforeunload', this.componentWillUnmounted);
+        window.addEventListener('keydown', this.detectCtrlCombination);
     }
 
     addColumn (title: string) {
@@ -93,7 +137,7 @@ class App extends Component <any, any> {
             columnList: currentColumns
         });
 
-        setTimeout(() => {this.saveStateInLocalStorage.call(this)})
+        setTimeout(this.memorizeEventInHistory.bind(this))
     }
 
     addCart (columnId: number) {
@@ -134,7 +178,7 @@ class App extends Component <any, any> {
             columnList: currentState
         });
         this.closeModal(CART_MODAL_WINDOW);
-        setTimeout(() => {this.saveStateInLocalStorage.call(this)})
+        setTimeout(this.memorizeEventInHistory.bind(this).bind(this))
     }
 
     editCart (columnId: number, cartId: number) {
@@ -150,6 +194,7 @@ class App extends Component <any, any> {
                 isOpened: !this.state.modalCart.isOpened
             }
         });
+        setTimeout(this.memorizeEventInHistory.bind(this))
     }
 
     submitCartInfo (val: {text: string,
@@ -183,7 +228,7 @@ class App extends Component <any, any> {
                 columnList: currentState
             });
             this.closeModal(CART_MODAL_WINDOW);
-            setTimeout(() => {this.saveStateInLocalStorage.call(this)})
+            setTimeout(this.memorizeEventInHistory.bind(this))
         }
 
         function addNewCart (this: any) {
@@ -207,7 +252,7 @@ class App extends Component <any, any> {
                 columnList: currentState
             });
             this.closeModal(CART_MODAL_WINDOW);
-            setTimeout(() => {this.saveStateInLocalStorage.call(this)})
+            setTimeout(this.memorizeEventInHistory.bind(this))
         }
     }
 
@@ -217,6 +262,69 @@ class App extends Component <any, any> {
                 isOpened: true
             }
         })
+    }
+
+    onChangeDrag (input: {
+        columnId: number,
+        cartId: number
+    }, output: {
+        columnId: number,
+        cartIndex: number,
+        cartOldIndex: number
+    }) {
+        if (input.columnId !== output.columnId) {
+            let initialState = [...this.state.columnList];
+            let draggedCart = [...this.state.columnList].find((el: any) => el.id === input.columnId).carts.find((el: any) => el.id === input.cartId);
+
+            initialState.forEach((el: any) => {
+                if (el.id === output.columnId) {
+                    const newId = calculateNextId(el.carts);
+                    draggedCart.id = newId;
+                    draggedCart.columnId = output.columnId;
+                    el.carts.splice(output.cartIndex, 0, draggedCart)
+                }
+
+                if (el.id === input.columnId) {
+                    el.carts.splice(output.cartOldIndex, 1)
+                }
+
+            });
+            this.setState({columnList: initialState});
+            setTimeout(this.memorizeEventInHistory.bind(this))
+        }
+        if (input.columnId === output.columnId && output.cartIndex !== output.cartOldIndex) {
+            let initialState = [...this.state.columnList];
+
+            initialState.forEach((el: any) => {
+                if (el.id === input.columnId) {
+                   const elToReplace = el.carts.splice(output.cartOldIndex, 1);
+                   el.carts.splice(output.cartIndex, 0, elToReplace[0]);
+                   console.log( el.carts)
+                }
+            });
+            this.setState({columnList: initialState});
+            setTimeout(this.memorizeEventInHistory.bind(this))
+        }
+    }
+
+    setStateFromHistory (type: string) {
+        let historyStep = this.state.historyStep;
+        let history: any = storage('history');
+        history = JSON.parse(history);
+
+        let step = type === 'prev' ? -1 : 1;
+
+        if (historyStep + step >= 0 && historyStep + step <  history.length) {
+            historyStep = historyStep + step
+        }
+
+        historyStep === 0 ? this.setState(initialState) : this.setState({...history[historyStep]});
+        this.setState({historyStep})
+    }
+
+    detectCtrlCombination (ev) {
+        if (ev.ctrlKey && ev.keyCode === 90) this.setStateFromHistory('prev');
+        if (ev.ctrlKey && ev.keyCode === 89) this.setStateFromHistory('next');
     }
 
 
@@ -235,10 +343,13 @@ class App extends Component <any, any> {
 
     return (
       <div className="App">
-        <HeaderComponent showCustomizeModal={this.showCustomizeModal}/>
+        <HeaderComponent setStateFromHistory={this.setStateFromHistory}
+                         historyStep={this.state.historyStep}
+                         showCustomizeModal={this.showCustomizeModal}/>
         <ContentComponent columnTitleChange={this.columnTitleChange}
                           addCart={this.addCart}
                           editCart={this.editCart}
+                          onChangeDrag={this.onChangeDrag}
                           addColumn={this.addColumn}
                           columnList={this.state.columnList}/>
           {modalCart}

@@ -60,6 +60,38 @@
 
 .header-buttons {
   z-index: 1;
+  display: flex;
+}
+
+.header-buttons__arrows {
+  display: flex;
+  align-items: center;
+  margin-right: 30px;
+  img {
+    width: 20px;
+    height: 23px;
+    margin: 0 5px;
+    cursor: pointer;
+    &:hover {
+      opacity: 0.8;
+    }
+    &:active {
+      filter: brightness(70%);
+    }
+    &.disable {
+      opacity: 0.3;
+      cursor: default;
+      &:hover {
+        opacity: 0.3;
+      }
+      &:active {
+        filter: brightness(100%);
+      }
+    }
+  }
+  img:nth-child(1) {
+    transform: rotate(180deg);
+  }
 }
 .header-buttons__add {
   position: relative;

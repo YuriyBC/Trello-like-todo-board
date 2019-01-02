@@ -1,6 +1,6 @@
 import * as React from "react";
 import '../styles/ColumnComponent.scss'
-import CartComponent from './CartComponent'
+import CartList from './CartList'
 
 interface ColumnComponentProps {
     title: string,
@@ -8,7 +8,8 @@ interface ColumnComponentProps {
     carts: Array<object>,
     columnTitleChange: any,
     addCart: any,
-    editCart: () => void
+    editCart: () => void,
+    onChangeDrag: () => void
 }
 
 export default class ColumnComponent extends React.Component <any, any> {
@@ -19,7 +20,7 @@ export default class ColumnComponent extends React.Component <any, any> {
             isCartCreationMode: false,
             textAreaRef: React.createRef()
         };
-        this.toggleCartCreationMode = this.toggleCartCreationMode.bind(this)
+        this.toggleCartCreationMode = this.toggleCartCreationMode.bind(this);
     }
 
     resizeTextArea (ev: any): void {
@@ -46,18 +47,6 @@ export default class ColumnComponent extends React.Component <any, any> {
     }
 
     render () {
-        const CartList = this.props.carts.map((cart: {
-            title: string,
-            id: number,
-            color: string,
-            text: string}, id: number) => {
-            return <CartComponent key={id}
-                                  editCart={() => {this.props.editCart(this.props.id, cart.id)}}
-                                  title={cart.title}
-                                  color={cart.color}
-                                  text={cart.text} />
-        });
-
         return <div className="column">
             <div className="column-header">
                 <textarea onChange={(ev) => this.props.columnTitleChange(ev, this.props.id)}
@@ -67,7 +56,11 @@ export default class ColumnComponent extends React.Component <any, any> {
                 <span className="column-header__settings">...</span>
             </div>
             <div className="column-carts">
-                {CartList}
+                <CartList editCart={this.props.editCart}
+                          id={this.props.id}
+                          onChangeDrag={this.props.onChangeDrag}
+                          onDropCart={this.props.onDropCart}
+                          carts={this.props.carts}/>
             </div>
             <div className="column-footer">
                 <span onClick={this.toggleCartCreationMode}>Add a cart...</span>

@@ -5,10 +5,11 @@ interface CartComponentProps {
     title: string,
     text: string,
     editCart: any,
-    color: string
+    color: string,
+    id: number
 }
 
-export default function CartComponent (props: CartComponentProps) {
+ const CartComponent = (props: CartComponentProps) => {
  const style = props.color ? {"backgroundColor": props.color} : {};
 
  function trimString (string: string) {
@@ -18,6 +19,7 @@ export default function CartComponent (props: CartComponentProps) {
  }
 
  return <div className="column-cart"
+             data-id={props.id}
              style={style}>
             <img className="column-cart__icon"
                  onClick={props.editCart}
@@ -26,4 +28,6 @@ export default function CartComponent (props: CartComponentProps) {
             <span>{props.title}</span>
             <p>{trimString(props.text)}</p>
          </div>
-}
+};
+
+export default CartComponent
