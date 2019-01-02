@@ -18,7 +18,8 @@ export default class ColumnComponent extends React.Component <any, any> {
         this.state = {
             isTitleEditMode: false,
             isCartCreationMode: false,
-            textAreaRef: React.createRef()
+            textAreaRef: React.createRef(),
+            isDropDownOpened: true
         };
         this.toggleCartCreationMode = this.toggleCartCreationMode.bind(this);
     }
@@ -53,12 +54,17 @@ export default class ColumnComponent extends React.Component <any, any> {
                           value={this.props.title}
                           onKeyDown={this.resizeTextArea}
                           className="column-header__title"/>
-                <span className="column-header__settings">...</span>
+                <span className="column-header__settings icon">...</span>
+                <div className="">
+
+                </div>
+
             </div>
             <div className="column-carts">
                 <CartList editCart={this.props.editCart}
                           id={this.props.id}
                           onChangeDrag={this.props.onChangeDrag}
+                          navigateCart={this.props.navigateCart}
                           onDropCart={this.props.onDropCart}
                           carts={this.props.carts}/>
             </div>

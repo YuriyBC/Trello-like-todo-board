@@ -55,6 +55,7 @@ class App extends Component <any, any> {
     this.setStateFromHistory = this.setStateFromHistory.bind(this);
     this.componentWillUnmounted = this.componentWillUnmounted.bind(this);
     this.detectCtrlCombination = this.detectCtrlCombination.bind(this);
+    this.navigateCart = this.navigateCart.bind(this);
   }
     columnTitleChange = function (this: App, ev: any, id: Number): void {
         this.setState({
@@ -299,7 +300,6 @@ class App extends Component <any, any> {
                 if (el.id === input.columnId) {
                    const elToReplace = el.carts.splice(output.cartOldIndex, 1);
                    el.carts.splice(output.cartIndex, 0, elToReplace[0]);
-                   console.log( el.carts)
                 }
             });
             this.setState({columnList: initialState});
@@ -327,6 +327,82 @@ class App extends Component <any, any> {
         if (ev.ctrlKey && ev.keyCode === 89) this.setStateFromHistory('next');
     }
 
+    navigateCart (ev: any, columnId: number, cartId: number) {
+        const targetEl = ev.target;
+        const usedKeys = {
+            arrowTop: 'ArrowUp',
+            arrowDown: 'ArrowDown',
+            arrowLeft: 'ArrowLeft',
+            arrowRight: 'ArrowRight',
+            enter: 'Enter'
+        };
+        const verticalDirection = [usedKeys.arrowTop, usedKeys.arrowDown].indexOf(ev.key) !== -1 ? ev.key : null;
+        const horizontalDirection = [usedKeys.arrowLeft, usedKeys.arrowRight].indexOf(ev.key) !== -1 ? ev.key : null;
+        const isEnterClicked = ev.key === usedKeys. enter;
+
+        if (verticalDirection) {
+            const currentState = [...this.state.columnList];
+            const step = verticalDirection === usedKeys.arrowTop ? -1 : 1;
+            const nextEl = verticalDirection === usedKeys.arrowTop ? targetEl.previousSibling : targetEl.nextSibling
+            let cartIndex,
+                columnIndex,
+                _maxIndex,
+                _minIndex = 0;
+
+            currentState.map((el: any, index: number) => {
+                if (el.id === columnId) {
+                    columnIndex = index;
+                    cartIndex = el.carts.map((el: any) => el.id).indexOf(cartId);
+                    _maxIndex = el.carts.length - 1;
+                }
+            });
+
+            const indexToReach = cartIndex + step;
+            if (_minIndex <= indexToReach && indexToReach <= _maxIndex) {
+                let carts = currentState[columnIndex].carts;
+                const replacedItem = carts.splice(indexToReach, 1, carts[cartIndex]);
+                carts.splice(cartIndex, 1, replacedItem[0]);
+
+                this.setState({columnList: currentState});
+                setTimeout(nextEl.focus())
+            }
+        }
+
+        if (horizontalDirection) {
+            const currentState = [...this.state.columnList];
+            const step = horizontalDirection === usedKeys.arrowLeft ? -1 : 1;
+            const nextColumn = horizontalDirection === usedKeys.arrowLeft ? ev.target.offsetParent.previousSibling : ev.target.offsetParent.nextSibling
+            let cartIndex,
+                columnIndex,
+                _maxIndex = currentState.length - 1,
+                _minIndex = 0;
+
+            currentState.map((el: any, index: number) => {
+                if (el.id === columnId) {
+                    columnIndex = index;
+                    cartIndex = el.carts.map((el: any) => el.id).indexOf(cartId);
+                }
+            });
+
+            const columnToReach = columnIndex + step;
+            if (_minIndex <= columnToReach && columnToReach <= _maxIndex) {
+                let carts = currentState[columnIndex].carts;
+                const movedCart = carts.splice(cartIndex, 1)[0];
+
+                let movedCartIndex = currentState[columnToReach].carts.length > cartIndex ? cartIndex : currentState[columnToReach].carts.length;
+                currentState[columnToReach].carts.splice(movedCartIndex, 0, movedCart);
+
+                this.setState({columnList: currentState});
+                setTimeout(() => {
+                    const el = nextColumn.getElementsByClassName('column-cart')[movedCartIndex];
+                    if (el) el.focus()
+                })
+            }
+        }
+
+        if (isEnterClicked) this.editCart(columnId, cartId);
+    }
+
 
   render(): React.ReactNode {
     const modalCart = this.state.modalCart.isOpened ?
@@ -351,6 +427,7 @@ class App extends Component <any, any> {
                           editCart={this.editCart}
                           onChangeDrag={this.onChangeDrag}
                           addColumn={this.addColumn}
+                          navigateCart={this.navigateCart}
                           columnList={this.state.columnList}/>
           {modalCart}
           {modalCustomize}

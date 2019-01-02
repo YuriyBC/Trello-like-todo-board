@@ -10,11 +10,13 @@ body {
   background-repeat: no-repeat;
   background-position: center top;
   background-size: 100%;
+  overflow: hidden;
   height: 100vh;
 }
 
 .icon {
   cursor: pointer;
+  user-select: none;
   &:hover {
     opacity: 0.8;
   }

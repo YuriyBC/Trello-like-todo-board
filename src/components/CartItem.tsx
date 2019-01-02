@@ -6,7 +6,8 @@ interface CartComponentProps {
     text: string,
     editCart: any,
     color: string,
-    id: number
+    id: number,
+    navigateCart: any
 }
 
  const CartComponent = (props: CartComponentProps) => {
@@ -19,7 +20,10 @@ interface CartComponentProps {
  }
 
  return <div className="column-cart"
+             tabIndex={0}
+             onKeyDown={props.navigateCart}
              data-id={props.id}
+             onClick={(ev: any) => {ev.target.focus()}}
              style={style}>
             <img className="column-cart__icon"
                  onClick={props.editCart}

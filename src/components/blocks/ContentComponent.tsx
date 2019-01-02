@@ -57,6 +57,7 @@ export class ContentComponent  extends React.Component <any, any> {
                                     editCart={this.props.editCart}
                                     carts={column.carts}
                                     addCart={this.props.addCart}
+                                    navigateCart={this.props.navigateCart}
                                     columnTitleChange={this.props.columnTitleChange}
                                     key={column.id}
                                     onChangeDrag={this.props.onChangeDrag}

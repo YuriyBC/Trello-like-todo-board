@@ -134,6 +134,11 @@ export class UpdateCartModal extends React.Component <any, any> {
                         style={{background: availibleColors[i]}}/>
         });
 
+        const removeButton = this.state.type === UPDATE_CART ? <div className="model__button button-form__red"
+                                   onClick={this.removeCart}>
+                                Remove
+                            </div> : null;
+
         return <div className="modal" ref={this.state.modalRef}>
             <div className="modal__container">
                 <div className="modal__container-relative">
@@ -165,10 +170,9 @@ export class UpdateCartModal extends React.Component <any, any> {
                     </div>
 
                     <div className="model__container-footer">
-                        <div className="model__button button-form__red"
-                             onClick={this.removeCart}>
-                            Remove
-                        </div>
+                        <span>
+                          {removeButton}
+                        </span>
                         <div className="model__button button-form__green"
                              onClick={this.submitResult}>
                             Save

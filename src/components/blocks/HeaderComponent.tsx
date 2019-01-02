@@ -37,18 +37,24 @@ export class HeaderComponent extends React.Component <any, any> {
                 <input type="text"/>
             </div>
             <div className="header-inner">
-                <div className="header-logo"></div>
+                <a href="/"><div className="header-logo"></div></a>
             </div>
             <div className="header-buttons">
                 <div className="header-buttons__arrows">
-                    <img onClick={() => isPrevIconActive && this.props.setStateFromHistory('prev')}
-                         className={prevIconClass}
-                         src={icDir} alt=""/>
-                    <img onClick={() => isNextIconActive && this.props.setStateFromHistory('next')}
-                         className={nextIconClass}
-                         src={icDir} alt=""/>
+                    <button className={prevIconClass}
+                            onClick={() => isPrevIconActive && this.props.setStateFromHistory('prev')}>
+                        <img tabIndex={-1}
+                             src={icDir} alt=""/>
+                    </button>
+                    <button className={nextIconClass}
+                            onClick={() => isNextIconActive && this.props.setStateFromHistory('next')}>
+                        <img tabIndex={-1}
+                             src={icDir} alt=""/>
+                    </button>
                 </div>
-                <div className="header-buttons__add" onClick={this.showDropdownContent}>
+                <div tabIndex={0}
+                     className="header-buttons__add"
+                     onClick={this.showDropdownContent}>
                     <div className="header-buttons__add__shadow"></div>
                     <div className="header-buttons__drop-content" style={{"display": !this.state.isDropDownHidden ? 'none' : 'block'}}>
                         <p onClick={this.props.showCustomizeModal}>Customize your trello</p>
