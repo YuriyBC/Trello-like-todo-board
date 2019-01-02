@@ -9,7 +9,8 @@ interface ColumnComponentProps {
     columnTitleChange: any,
     addCart: any,
     editCart: () => void,
-    onChangeDrag: () => void
+    onChangeDrag: () => void,
+    removeColumn: () => void
 }
 
 export default class ColumnComponent extends React.Component <any, any> {
@@ -19,9 +20,10 @@ export default class ColumnComponent extends React.Component <any, any> {
             isTitleEditMode: false,
             isCartCreationMode: false,
             textAreaRef: React.createRef(),
-            isDropDownOpened: true
+            isDropDownOpened: false
         };
         this.toggleCartCreationMode = this.toggleCartCreationMode.bind(this);
+        this.toggleColumnDropdown = this.toggleColumnDropdown.bind(this);
     }
 
     resizeTextArea (ev: any): void {
@@ -47,18 +49,25 @@ export default class ColumnComponent extends React.Component <any, any> {
         this.props.addCart(columnId);
     }
 
+    toggleColumnDropdown (forseState?: boolean) {
+        this.setState({isDropDownOpened: typeof forseState !== 'undefined' ? forseState : !this.state.isDropDownOpened})
+    }
+
     render () {
-        return <div className="column">
+        const dropdown = this.state.isDropDownOpened ? <div className="column-header__dropdown">
+            <p onClick={() => this.props.removeColumn(this.props.id)}>Remove column</p>
+        </div> : null;
+
+        return <div className="column"
+                    onMouseLeave={() => this.toggleColumnDropdown(false)}>
             <div className="column-header">
                 <textarea onChange={(ev) => this.props.columnTitleChange(ev, this.props.id)}
                           value={this.props.title}
                           onKeyDown={this.resizeTextArea}
                           className="column-header__title"/>
-                <span className="column-header__settings icon">...</span>
-                <div className="">
-
-                </div>
-
+                <span className="column-header__settings icon" 
+                      onClick={() => this.toggleColumnDropdown()}>...</span>
+                    {dropdown}
             </div>
             <div className="column-carts">
                 <CartList editCart={this.props.editCart}

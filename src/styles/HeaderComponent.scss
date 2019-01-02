@@ -1,7 +1,7 @@
 .header {
     position: relative;
     height: 32px;
-    padding: 4px;
+    padding: 4px 10px;
     display: flex;
     justify-content: space-between;
     background-color: rgba(0, 0, 0, 0.15);
@@ -51,9 +51,16 @@
     box-sizing: border-box;
     background: hsla(0,0%,100%,.3) url('../img/ic-search.png') no-repeat 97% 75%;
     background-size: 25px;
+    outline: none;
     &:hover {
       background-color: hsla(0,0%,100%,.4);
       box-shadow: none;
+    }
+    &:focus {
+      background-color: white;
+      width: 280px;
+      color: #17394d;
+      background-size: 10px;
     }
   }
 }
@@ -76,6 +83,7 @@
     background: none;
     border: none;
     box-shadow: none;
+    display: flex;
     cursor: pointer;
     &:focus, img:focus {
       outline: none;
@@ -133,7 +141,7 @@
   }
 }
 
-.header-buttons__drop-content {
+.header-buttons__drop-content, .column-header__dropdown {
   position: absolute;
   top: 40px;
   margin-left: -140px;

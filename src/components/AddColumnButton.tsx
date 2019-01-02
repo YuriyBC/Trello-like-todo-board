@@ -24,7 +24,7 @@ export default function AddColumnButton (props: AddColumnButtonProps) {
         <div onClick={props.toggleEditMode}
              className="columns-wrapper__add__initial">
             <img src={imgAdd} alt="add icon"/>
-            <span>Добавить еще одну колонку</span>
+            <span>Add another column</span>
         </div>;
 
         const editableMode =
@@ -32,12 +32,12 @@ export default function AddColumnButton (props: AddColumnButtonProps) {
             <div>
                 <input type="text"
                        ref={props.formRef}
-                       placeholder="Ввести заголовок списка"/>
+                       placeholder="Enter a list title"/>
             </div>
             <div>
                 <div className="columns-wrapper__add__edit-button button-form__green"
                      onClick={props.addColumn}>
-                    Добавить список</div>
+                    Add list</div>
                 <img onClick={props.toggleEditMode}
                      src={imgClose} alt=""/>
             </div>

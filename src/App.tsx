@@ -56,6 +56,8 @@ class App extends Component <any, any> {
     this.componentWillUnmounted = this.componentWillUnmounted.bind(this);
     this.detectCtrlCombination = this.detectCtrlCombination.bind(this);
     this.navigateCart = this.navigateCart.bind(this);
+    this.removeColumn = this.removeColumn.bind(this);
+    this.filterCarts = this.filterCarts.bind(this);
   }
     columnTitleChange = function (this: App, ev: any, id: Number): void {
         this.setState({
@@ -179,7 +181,14 @@ class App extends Component <any, any> {
             columnList: currentState
         });
         this.closeModal(CART_MODAL_WINDOW);
-        setTimeout(this.memorizeEventInHistory.bind(this).bind(this))
+        setTimeout(this.memorizeEventInHistory.bind(this).bind(this));
+    }
+
+    removeColumn (columnId) {
+        let currentState = [...this.state.columnList];
+        currentState = currentState.filter(el => el.id !== columnId);
+        this.setState({columnList: currentState});
+        setTimeout(this.memorizeEventInHistory.bind(this).bind(this));
     }
 
     editCart (columnId: number, cartId: number) {
@@ -403,6 +412,28 @@ class App extends Component <any, any> {
         if (isEnterClicked) this.editCart(columnId, cartId);
     }
 
+    filterCarts (ev: any) {
+        const valueToFind = ev.target.value.trim();
+        let history: any = storage('history');
+        history = JSON.parse(history);
+
+        let currentState = history[history.length - 1].columnList;
+
+        if (valueToFind && valueToFind.length > 1) {
+            let resultState = currentState.filter((el: any) => {
+                el.carts = el.carts.filter((el) => {
+                    let elString = el.title + ' ' + el.text;
+                    return elString.toLowerCase().indexOf(valueToFind.toLowerCase()) !== -1;
+                });
+                return el.carts.length
+            });
+            this.setState({columnList: resultState})
+        } else {
+            this.setState({columnList: currentState})
+        }
+
+    }
+
 
   render(): React.ReactNode {
     const modalCart = this.state.modalCart.isOpened ?
@@ -421,14 +452,16 @@ class App extends Component <any, any> {
       <div className="App">
         <HeaderComponent setStateFromHistory={this.setStateFromHistory}
                          historyStep={this.state.historyStep}
+                         filterCarts={this.filterCarts}
                          showCustomizeModal={this.showCustomizeModal}/>
         <ContentComponent columnTitleChange={this.columnTitleChange}
+                          columnList={this.state.columnList}
+                          addColumn={this.addColumn}
                           addCart={this.addCart}
                           editCart={this.editCart}
                           onChangeDrag={this.onChangeDrag}
-                          addColumn={this.addColumn}
-                          navigateCart={this.navigateCart}
-                          columnList={this.state.columnList}/>
+                          removeColumn={this.removeColumn}
+                          navigateCart={this.navigateCart}/>
           {modalCart}
           {modalCustomize}
       </div>

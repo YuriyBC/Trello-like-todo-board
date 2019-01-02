@@ -25,7 +25,7 @@
     position: absolute;
     right: 10px;
     top: 10px;
-    width: 20px;
+    width: 12px;
   }
   .modal-field {
     box-sizing: border-box;
@@ -50,15 +50,20 @@
   .modal-form__file {
   }
   ::-webkit-file-upload-button {
-    background: #ebeef0;
-    box-shadow: 0 0 1px 1px rgba(0,0,0,0.2);
-    border-radius: 12px;
+    background: white;
+    box-shadow: none;
+    border: 1px solid #516b7a;
+    border-radius: 5px;
     padding: 7px 15px;
     cursor: pointer;
+    color: #516b7a;
     transition: 0.2s;
     outline: none;
     &:hover {
       opacity: 0.8;
+    }
+    &:active {
+      opacity: 0.3;
     }
   }
   .color-example {

@@ -13,6 +13,7 @@ interface ContentComponentInterface {
     addColumn: () => void,
     columnTitleChange: any
     onChangeDrag: () => void,
+    removeColumn: () => void
 }
 
 export class ContentComponent  extends React.Component <any, any> {
@@ -59,6 +60,7 @@ export class ContentComponent  extends React.Component <any, any> {
                                     addCart={this.props.addCart}
                                     navigateCart={this.props.navigateCart}
                                     columnTitleChange={this.props.columnTitleChange}
+                                    removeColumn={this.props.removeColumn}
                                     key={column.id}
                                     onChangeDrag={this.props.onChangeDrag}
                                     id={column.id}/>

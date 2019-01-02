@@ -125,10 +125,8 @@ export class CustomizeModalComponent extends React.Component <any, any> {
                         <p>Pick color</p>
                         {colorList}
                     </div>
+                    <br/>
                     <div className="modal-field">
-                        <p>
-                            <i>or</i>
-                        </p>
                         <p>Upload image</p>
                         <input accept="image/*"
                                className="modal-form__file"

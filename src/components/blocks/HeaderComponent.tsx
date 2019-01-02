@@ -17,9 +17,9 @@ export class HeaderComponent extends React.Component <any, any> {
         this.showDropdownContent = this.showDropdownContent.bind(this)
     }
 
-    showDropdownContent () {
+    showDropdownContent (forceState?: boolean) {
         this.setState({
-            isDropDownHidden: !this.state.isDropDownHidden
+            isDropDownHidden: typeof forceState !== 'undefined' ? forceState : !this.state.isDropDownHidden
         })
     }
 
@@ -34,7 +34,7 @@ export class HeaderComponent extends React.Component <any, any> {
 
         return <div className="header">
             <div className="header-search">
-                <input type="text"/>
+                <input onChange={this.props.filterCarts} type="text"/>
             </div>
             <div className="header-inner">
                 <a href="/"><div className="header-logo"></div></a>
@@ -54,9 +54,15 @@ export class HeaderComponent extends React.Component <any, any> {
                 </div>
                 <div tabIndex={0}
                      className="header-buttons__add"
-                     onClick={this.showDropdownContent}>
+                     onClick={() => this.showDropdownContent()}>
                     <div className="header-buttons__add__shadow"></div>
-                    <div className="header-buttons__drop-content" style={{"display": !this.state.isDropDownHidden ? 'none' : 'block'}}>
+                    <div className="header-buttons__drop-content"
+                         onMouseLeave={() => {
+                             setTimeout(() => {
+                                 if (this.state.isDropDownHidden) this.showDropdownContent(false)
+                             }, 1000)
+                         }}
+                         style={{"display": !this.state.isDropDownHidden ? 'none' : 'block'}}>
                         <p onClick={this.props.showCustomizeModal}>Customize your trello</p>
                     </div>
                 </div>
