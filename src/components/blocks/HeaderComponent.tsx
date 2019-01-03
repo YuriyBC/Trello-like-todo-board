@@ -9,7 +9,7 @@ interface HeaderComponentProps {
 }
 
 export class HeaderComponent extends React.Component <any, any> {
-    constructor (props: HeaderComponentProps) {
+    constructor(props: HeaderComponentProps) {
         super(props);
         this.state = {
             isDropDownHidden: false
@@ -17,16 +17,16 @@ export class HeaderComponent extends React.Component <any, any> {
         this.showDropdownContent = this.showDropdownContent.bind(this)
     }
 
-    showDropdownContent (forceState?: boolean) {
+    showDropdownContent(forceState?: boolean) {
         this.setState({
             isDropDownHidden: typeof forceState !== 'undefined' ? forceState : !this.state.isDropDownHidden
         })
     }
 
-    render () {
+    render() {
         let storageHistory: any = localStorage.getItem('history');
         storageHistory = JSON.parse(storageHistory);
-        const isPrevIconActive =  this.props.historyStep > 0;
+        const isPrevIconActive = this.props.historyStep > 0;
         const isNextIconActive = storageHistory && this.props.historyStep < storageHistory.length - 1;
 
         const prevIconClass: string = isPrevIconActive ? 'active' : 'disable';
@@ -37,7 +37,9 @@ export class HeaderComponent extends React.Component <any, any> {
                 <input onChange={this.props.filterCarts} type="text"/>
             </div>
             <div className="header-inner">
-                <a href="/"><div className="header-logo"></div></a>
+                <a href="/">
+                    <div className="header-logo"></div>
+                </a>
             </div>
             <div className="header-buttons">
                 <div className="header-buttons__arrows">

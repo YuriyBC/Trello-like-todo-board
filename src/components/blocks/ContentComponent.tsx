@@ -16,8 +16,8 @@ interface ContentComponentInterface {
     removeColumn: () => void
 }
 
-export class ContentComponent  extends React.Component <any, any> {
-    constructor (props: ContentComponentInterface) {
+export class ContentComponent extends React.Component <any, any> {
+    constructor(props: ContentComponentInterface) {
         super(props);
         this.state = {
             isAddColumnButtonEditable: false,
@@ -27,13 +27,13 @@ export class ContentComponent  extends React.Component <any, any> {
         this.addColumn = this.addColumn.bind(this)
     }
 
-    toggleEditMode (forceValue?: boolean): void {
+    toggleEditMode(forceValue?: boolean): void {
         this.setState({
             isAddColumnButtonEditable: typeof forceValue === 'boolean' ? forceValue : !this.state.isAddColumnButtonEditable
         })
     }
 
-    addColumn () {
+    addColumn() {
         const columnTitle = this.state.formRef.current.value;
         if (columnTitle) {
             this.props.addColumn(this.state.formRef.current.value);
@@ -44,11 +44,13 @@ export class ContentComponent  extends React.Component <any, any> {
             const initialColor = this.state.formRef.current.style.boxShadow;
 
             formEl.style.boxShadow = 'inset 0 0 0 2px red';
-            setTimeout(() => {formEl.style.boxShadow = initialColor}, RETURN_COLOR_TIME)
+            setTimeout(() => {
+                formEl.style.boxShadow = initialColor
+            }, RETURN_COLOR_TIME)
         }
     }
 
-    render () {
+    render() {
         const columnList: any = this.props.columnList.map((column: {
             title: string,
             carts: Array<object>,
@@ -71,7 +73,7 @@ export class ContentComponent  extends React.Component <any, any> {
             <AddColumnButton toggleEditMode={this.toggleEditMode}
                              isAddColumnButtonEditable={this.state.isAddColumnButtonEditable}
                              formRef={this.state.formRef}
-                             addColumn={this.addColumn} />
+                             addColumn={this.addColumn}/>
         </div>
     }
 }

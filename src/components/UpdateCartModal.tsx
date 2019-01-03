@@ -18,6 +18,7 @@ interface availibleColorsInterface {
     red: string;
     orange: string;
     blue: string;
+
     [propName: string]: string | number | undefined;
 }
 
@@ -35,7 +36,7 @@ interface UpdateCartModalInterface {
 }
 
 export class UpdateCartModal extends React.Component <any, any> {
-    constructor (props: UpdateCartModalInterface) {
+    constructor(props: UpdateCartModalInterface) {
         super(props);
         this.state = {
             color: '',
@@ -49,9 +50,10 @@ export class UpdateCartModal extends React.Component <any, any> {
         this.submitResult = this.submitResult.bind(this);
         this.removeCart = this.removeCart.bind(this);
         this.isFormsValid = this.isFormsValid.bind(this);
+        this.modalClickHandler = this.modalClickHandler.bind(this)
     }
 
-    componentDidMount () {
+    componentDidMount() {
         if (this.state.type === UPDATE_CART) {
             const {color, title, text} = this.props.cartInfo;
             this.setState({
@@ -62,26 +64,26 @@ export class UpdateCartModal extends React.Component <any, any> {
         }
     }
 
-    setForm (ev: any, field: string) {
+    setForm(ev: any, field: string) {
         this.setState({
             [field]: ev.target.value
         });
     }
 
-    setColor (color: any) {
+    setColor(color: any) {
         const colorToSet = this.state.color === color ? '' : color;
         this.setState({
             color: colorToSet
         });
     }
 
-    removeCart () {
-        const {id} = this.props.cartInfo
-        const {columnId} = this.props
+    removeCart() {
+        const {id} = this.props.cartInfo;
+        const {columnId} = this.props;
         this.props.removeCart(columnId, id)
     }
 
-    isFormsValid () {
+    isFormsValid() {
         const modalEl = this.state.modalRef.current;
         let elms = modalEl.getElementsByClassName('form');
         const TIME_STYLES_APPLY = 1000;
@@ -89,7 +91,9 @@ export class UpdateCartModal extends React.Component <any, any> {
         return [...elms].every((el) => {
             if (el.required && !el.value.trim()) {
                 el.style.border = '1px solid red';
-                setTimeout(() => {el.style.border = 'none'}, TIME_STYLES_APPLY);
+                setTimeout(() => {
+                    el.style.border = 'none'
+                }, TIME_STYLES_APPLY);
                 return false
             } else {
                 return true
@@ -97,21 +101,27 @@ export class UpdateCartModal extends React.Component <any, any> {
         })
     }
 
-    submitResult () {
+    submitResult() {
         const isValid = this.isFormsValid();
         if (isValid) {
-          this.props.submitCartInfo({
-              color: this.state.color,
-              text: this.state.text,
-              title: this.state.title,
-              cartId: this.props.cartInfo ? this.props.cartInfo.id : null,
-              columnId: this.props.columnId,
-              type: this.state.type
-          })
+            this.props.submitCartInfo({
+                color: this.state.color,
+                text: this.state.text,
+                title: this.state.title,
+                cartId: this.props.cartInfo ? this.props.cartInfo.id : null,
+                columnId: this.props.columnId,
+                type: this.state.type
+            })
         }
     }
 
-    render () {
+    modalClickHandler(ev: React.SyntheticEvent) {
+        if (ev.target === this.state.modalRef.current) {
+            this.props.closeModal()
+        }
+    }
+
+    render() {
         let titlePlaceholder: string = "Enter title for the cart";
         let textPlaceholder: string = "Enter text message";
 
@@ -135,11 +145,13 @@ export class UpdateCartModal extends React.Component <any, any> {
         });
 
         const removeButton = this.state.type === UPDATE_CART ? <div className="model__button button-form__red"
-                                   onClick={this.removeCart}>
-                                Remove
-                            </div> : null;
+                                                                    onClick={this.removeCart}>
+            Remove
+        </div> : null;
 
-        return <div className="modal" ref={this.state.modalRef}>
+        return <div className="modal"
+                    onClick={this.modalClickHandler}
+                    ref={this.state.modalRef}>
             <div className="modal__container">
                 <div className="modal__container-relative">
                     <img className="modal__close icon"

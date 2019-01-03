@@ -21,7 +21,15 @@ function storage (...args) {
     }
 }
 
+function removeFocusFromAllElements () {
+    const tmp = document.createElement('input');
+    document.body.appendChild(tmp);
+    tmp.focus();
+    document.body.removeChild(tmp);
+}
+
 export {
     calculateNextId,
-    storage
+    storage,
+    removeFocusFromAllElements
 }

@@ -1,7 +1,7 @@
 .modal.customize {
   position: absolute;
   left: 0;
-  background: rgba(0,0,0,0.2);
+  background: rgba(0, 0, 0, 0.2);
   z-index: 1;
   font-size: 1rem;
   .modal__container {
@@ -39,7 +39,7 @@
       width: 100%;
       font-family: Helvetica;
       font-size: 1rem;
-      box-shadow: 0 1px 0 rgba(9,45,66,.25);
+      box-shadow: 0 1px 0 rgba(9, 45, 66, .25);
       border-radius: 3px;
       border: 0;
     }

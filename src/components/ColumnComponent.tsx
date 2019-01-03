@@ -14,7 +14,7 @@ interface ColumnComponentProps {
 }
 
 export default class ColumnComponent extends React.Component <any, any> {
-    constructor (props: ColumnComponentProps) {
+    constructor(props: ColumnComponentProps) {
         super(props);
         this.state = {
             isTitleEditMode: false,
@@ -24,36 +24,38 @@ export default class ColumnComponent extends React.Component <any, any> {
         };
         this.toggleCartCreationMode = this.toggleCartCreationMode.bind(this);
         this.toggleColumnDropdown = this.toggleColumnDropdown.bind(this);
+        this.resizeTextArea = this.resizeTextArea.bind(this);
     }
 
-    resizeTextArea (ev: any): void {
-        const element: HTMLElement = ev.target;
+    resizeTextArea(ev?: any): void {
+        let element: HTMLElement = this.state.textAreaRef.current;
 
-        if (ev.key === 'Enter' && !ev.shiftKey) {
+        if (ev && ev.key === 'Enter' && !ev.shiftKey) {
             ev.preventDefault();
             element.blur();
             return
         }
         element.style.height = "5px";
-        element.style.height = (element.scrollHeight)+"px";
+        element.style.height = (element.scrollHeight) + "px"
     }
 
-    componentDidMount () {
+    componentDidMount() {
         let el: any = document.getElementsByClassName('column-header__title')[0];
         el.style.height = "5px";
-        el.style.height = (el.scrollHeight)+"px";
+        el.style.height = (el.scrollHeight) + "px";
+        setTimeout(() => {this.resizeTextArea()})
     }
 
-    toggleCartCreationMode () {
+    toggleCartCreationMode() {
         const columnId = this.props.id;
         this.props.addCart(columnId);
     }
 
-    toggleColumnDropdown (forseState?: boolean) {
+    toggleColumnDropdown(forseState?: boolean) {
         this.setState({isDropDownOpened: typeof forseState !== 'undefined' ? forseState : !this.state.isDropDownOpened})
     }
 
-    render () {
+    render() {
         const dropdown = this.state.isDropDownOpened ? <div className="column-header__dropdown">
             <p onClick={() => this.props.removeColumn(this.props.id)}>Remove column</p>
         </div> : null;
@@ -63,11 +65,12 @@ export default class ColumnComponent extends React.Component <any, any> {
             <div className="column-header">
                 <textarea onChange={(ev) => this.props.columnTitleChange(ev, this.props.id)}
                           value={this.props.title}
+                          ref={this.state.textAreaRef}
                           onKeyDown={this.resizeTextArea}
                           className="column-header__title"/>
-                <span className="column-header__settings icon" 
+                <span className="column-header__settings icon"
                       onClick={() => this.toggleColumnDropdown()}>...</span>
-                    {dropdown}
+                {dropdown}
             </div>
             <div className="column-carts">
                 <CartList editCart={this.props.editCart}

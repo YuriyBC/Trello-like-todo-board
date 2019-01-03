@@ -10,82 +10,64 @@ import {
     BLUE_COLOR
 } from '../utils/constants.js'
 
-import {
-    storage
-} from '../utils/methods'
-
 interface availibleColorsInterface {
     green: string;
     yellow: string;
     red: string;
     orange: string;
     blue: string;
+
     [propName: string]: string | number | undefined;
 }
 
 
 export class CustomizeModalComponent extends React.Component <any, any> {
-    constructor (props: {}) {
+    constructor(props: {
+        backgroundColor: string,
+        backgroundImage?: string
+    }) {
         super(props);
         this.state = {
             modalRef: React.createRef(),
-            color: null,
-            fileInput: React.createRef(),
-            backgroundImage: null
+            color: props.backgroundColor,
+            fileInput: React.createRef()
         };
         this.setColor = this.setColor.bind(this);
         this.submitResult = this.submitResult.bind(this);
         this.removeImage = this.removeImage.bind(this);
+        this.modalClickHandler = this.modalClickHandler.bind(this);
     }
 
-    componentDidMount () {
-        function rgb2hex(rgb?: any){
-            const color = rgb.match(/^rgba?[\s+]?\([\s+]?(\d+)[\s+]?,[\s+]?(\d+)[\s+]?,[\s+]?(\d+)[\s+]?/i);
-            return (color && color.length === 4) ? "#" +
-                ("0" + parseInt(color[1],10).toString(16)).slice(-2) +
-                ("0" + parseInt(color[2],10).toString(16)).slice(-2) +
-                ("0" + parseInt(color[3],10).toString(16)).slice(-2) : '';
-        }
-
-        setTimeout(() => {
-            this.setState({
-                color: rgb2hex(document.body.style.backgroundColor),
-                backgroundImage: storage('backgroundImage')
-            })
-        })
-    }
-
-    setColor (color: any) {
+    setColor(color: any) {
         this.setState({
             color
         })
     }
 
-    submitResult () {
+    submitResult() {
         const fileInput = this.state.fileInput.current;
         if (this.state.color) {
-            document.body.style.backgroundColor = this.state.color
-            storage('backgroundColor', this.state.color)
+            this.props.setBackgroundStyle(this.state.color)
         }
         if (fileInput.files && fileInput.files.length) {
             const fileReader = new FileReader();
-            fileReader.readAsDataURL(fileInput.files[0])
-            fileReader.onload = function (e:any) {
-                document.body.style.backgroundImage = `url(${e.target.result})`
-                storage('backgroundImage', e.target.result)
+            fileReader.readAsDataURL(fileInput.files[0]);
+            fileReader.onload = (e: any) => {
+                this.props.setBackgroundStyle(null, e.target.result);
             };
         }
         this.props.closeModal();
     }
 
-    removeImage () {
-        this.setState({
-            backgroundImage: null
-        });
-        document.body.style.backgroundImage = '';
-        storage('backgroundImage', '')
+    removeImage() {
+        this.props.setBackgroundStyle(undefined, null);
     }
 
+    modalClickHandler(ev: React.SyntheticEvent) {
+        if (ev.target === this.state.modalRef.current) {
+            this.props.closeModal()
+        }
+    }
 
     render() {
         const availibleColors: availibleColorsInterface = {
@@ -96,25 +78,27 @@ export class CustomizeModalComponent extends React.Component <any, any> {
             blue: BLUE_COLOR
         };
 
-        let x = this;
+        let self = this;
         const colorList = Object.keys(availibleColors).map((i: any, index: number) => {
-            let colorClassName = x.state.color && x.state.color.toUpperCase() === availibleColors[i] ? "color-example active" : "color-example diactive"
-            if (!x.state.color) colorClassName = "color-example";
+            let colorClassName = self.state.color && self.state.color.toUpperCase() === availibleColors[i] ? "color-example active" : "color-example diactive"
+            if (!self.state.color) colorClassName = "color-example";
 
             return <div key={index}
                         className={colorClassName}
-                        onClick={() => x.setColor(availibleColors[i])}
+                        onClick={() => self.setColor(availibleColors[i])}
                         style={{background: availibleColors[i]}}/>
         });
 
 
-        const deleteImageButton = this.state.backgroundImage ? <div
-                                        className="model__button button-remove button-form__red"
-                                       onClick={this.removeImage}>
-                                        Delete Image
-                                    </div> : null;
+        const deleteImageButton = this.props.backgroundImage ? <div
+            className="model__button button-remove button-form__red"
+            onClick={this.removeImage}>
+            Delete Image
+        </div> : null;
 
-        return <div className="modal customize" ref={this.state.modalRef}>
+        return <div className="modal customize"
+                    onClick={this.modalClickHandler}
+                    ref={this.state.modalRef}>
             <div className="modal__container">
                 <div className="modal__container-relative">
                     <img className="modal__close icon"
@@ -140,7 +124,7 @@ export class CustomizeModalComponent extends React.Component <any, any> {
                         <span>
                             {deleteImageButton}
                         </span>
-                        <div className="model__button button-form__green" 
+                        <div className="model__button button-form__green"
                              onClick={this.submitResult}>
                             Save
                         </div>
