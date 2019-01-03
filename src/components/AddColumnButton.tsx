@@ -36,7 +36,9 @@ export default function AddColumnButton(props: AddColumnButtonProps) {
             </div>;
 
         if (isEditable) {
-            setTimeout(() => {props.formRef.current.focus()})
+            setTimeout(() => {
+                props.formRef.current.focus()
+            })
         }
 
         const editableMode =
@@ -44,6 +46,11 @@ export default function AddColumnButton(props: AddColumnButtonProps) {
                 <div>
                     <input type="text"
                            ref={props.formRef}
+                           onKeyPress={(ev) => {
+                               if (ev && ev.key === 'Enter') {
+                                   props.addColumn()
+                               }
+                           }}
                            placeholder="Enter list title..."/>
                 </div>
                 <div>

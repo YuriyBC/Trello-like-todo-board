@@ -78,17 +78,16 @@ export class UpdateCartModal extends React.Component <any, any> {
     }
 
     removeCart() {
-        const {id} = this.props.cartInfo;
-        const {columnId} = this.props;
-        this.props.removeCart(columnId, id)
+        this.props.removeCart(this.props.columnId, this.props.cartInfo.id)
     }
 
     isFormsValid() {
         const modalEl = this.state.modalRef.current;
-        let elms = modalEl.getElementsByClassName('form');
+        const classList: any = modalEl.getElementsByClassName('form');
+        let elms: any = Array.from(classList);
         const TIME_STYLES_APPLY = 1000;
 
-        return [...elms].every((el) => {
+        return elms.every((el) => {
             if (el.required && !el.value.trim()) {
                 el.style.border = '1px solid red';
                 setTimeout(() => {
@@ -144,7 +143,8 @@ export class UpdateCartModal extends React.Component <any, any> {
                         style={{background: availibleColors[i]}}/>
         });
 
-        const removeButton = this.state.type === UPDATE_CART ? <div className="model__button button-form__red"
+        const removeButton = this.state.type === UPDATE_CART ? <div tabIndex={1}
+                                                                    className="model__button button-form__red"
                                                                     onClick={this.removeCart}>
             Remove
         </div> : null;
@@ -185,7 +185,8 @@ export class UpdateCartModal extends React.Component <any, any> {
                         <span>
                           {removeButton}
                         </span>
-                        <div className="model__button button-form__green"
+                        <div tabIndex={1}
+                             className="model__button button-form__green"
                              onClick={this.submitResult}>
                             Save
                         </div>

@@ -20,6 +20,9 @@ interface availibleColorsInterface {
     [propName: string]: string | number | undefined;
 }
 
+interface HTMLInputEvent extends React.SyntheticEvent {
+    target: HTMLInputElement & EventTarget;
+}
 
 export class CustomizeModalComponent extends React.Component <any, any> {
     constructor(props: {
@@ -30,12 +33,14 @@ export class CustomizeModalComponent extends React.Component <any, any> {
         this.state = {
             modalRef: React.createRef(),
             color: props.backgroundColor,
-            fileInput: React.createRef()
+            fileInput: React.createRef(),
+            fileName: ''
         };
         this.setColor = this.setColor.bind(this);
         this.submitResult = this.submitResult.bind(this);
         this.removeImage = this.removeImage.bind(this);
         this.modalClickHandler = this.modalClickHandler.bind(this);
+        this.updateFilenameTitle = this.updateFilenameTitle.bind(this);
     }
 
     setColor(color: any) {
@@ -46,7 +51,7 @@ export class CustomizeModalComponent extends React.Component <any, any> {
 
     submitResult() {
         const fileInput = this.state.fileInput.current;
-        if (this.state.color) {
+        if (this.state.color !== this.props.backgroundColor) {
             this.props.setBackgroundStyle(this.state.color)
         }
         if (fileInput.files && fileInput.files.length) {
@@ -67,6 +72,15 @@ export class CustomizeModalComponent extends React.Component <any, any> {
         if (ev.target === this.state.modalRef.current) {
             this.props.closeModal()
         }
+    }
+
+    updateFilenameTitle(ev: HTMLInputEvent) {
+        if (ev.target.files && ev.target.files.length) {
+            this.setState({
+                fileName: ev.target.files[0].name
+            })
+        }
+
     }
 
     render() {
@@ -112,14 +126,18 @@ export class CustomizeModalComponent extends React.Component <any, any> {
                     <br/>
                     <div className="modal-field">
                         <p>Upload image</p>
-                        <input accept="image/*"
-                               className="modal-form__file"
-                               name="ImageForm"
-                               ref={this.state.fileInput}
-                               id="ImageForm"
-                               type="file"/>
+                        <div className="modal-field__uploader">
+                            <label htmlFor="ImageForm">Browse...</label>
+                            <input accept="image/*"
+                                   className="modal-form__file"
+                                   name="ImageForm"
+                                   onChange={this.updateFilenameTitle}
+                                   ref={this.state.fileInput}
+                                   id="ImageForm"
+                                   type="file"/>
+                            <span className="modal-field__fileName">{this.state.fileName}</span>
+                        </div>
                     </div>
-
                     <div className="model__container-footer">
                         <span>
                             {deleteImageButton}

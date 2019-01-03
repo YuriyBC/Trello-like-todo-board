@@ -15,8 +15,8 @@ const CartList = (props: any) => {
         return <CartComponent key={id}
                               id={cart.id}
                               navigateCart={(ev) => props.navigateCart(ev, props.id, cart.id)}
-                              editCart={() => {
-                                  props.editCart(props.id, cart.id)
+                              openCartForEdit={() => {
+                                  props.openCartForEdit(props.id, cart.id)
                               }}
                               title={cart.title}
                               color={cart.color}

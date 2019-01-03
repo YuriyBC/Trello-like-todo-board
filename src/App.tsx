@@ -1,9 +1,24 @@
 import React, {Component} from 'react';
+import { connect } from 'react-redux'
 import './styles/App.scss';
 import {HeaderComponent} from "./components/blocks/HeaderComponent";
 import {ContentComponent} from "./components/blocks/ContentComponent";
 import {UpdateCartModal} from './components/UpdateCartModal'
 import {CustomizeModalComponent} from './components/CustomizeModalComponent'
+
+import {
+    addColumn,
+    updateColumnTitle,
+    addCart,
+    updateCart,
+    removeCart,
+    removeColumn,
+    transferDraggbleCart,
+    navigateCart,
+    setColumnData,
+    filterCarts
+} from './store/actions'
+
 import {
     ColumnModel,
     CartModel
@@ -26,7 +41,6 @@ import {
 } from './utils/constants.js'
 
 interface stateInterface {
-    columnList: any,
     modalCart: {
         isOpened: boolean,
         columnId?: number,
@@ -37,15 +51,12 @@ interface stateInterface {
     },
     historyStep: number,
     backgroundColor: string,
-    backgroundImage?: any
+    backgroundImage?: any,
+    columnData: any,
+    dispatch: any
 }
 
 const initialState = {
-    columnList: [{
-        id: 0,
-        title: 'Stuff To Try (this is a list)',
-        carts: []
-    }],
     modalCart: {
         isOpened: false,
         columnId: null,
@@ -66,8 +77,8 @@ class App extends Component <stateInterface, any> {
         this.state = initialState;
 
         // cartChanges
-        this.editCart = this.editCart.bind(this);
-        this.addCart = this.addCart.bind(this);
+        this.openCartForEdit = this.openCartForEdit.bind(this);
+        this.toggleCartEditor = this.toggleCartEditor.bind(this);
         this.submitCartInfo = this.submitCartInfo.bind(this);
         this.removeCart = this.removeCart.bind(this);
         this.onChangeDrag = this.onChangeDrag.bind(this);
@@ -96,23 +107,14 @@ class App extends Component <stateInterface, any> {
     }
 
     componentDidUpdate() {
-        this.saveStateInLocalStorage()
+        this.saveStateInLocalStorage();
     }
 
-    columnTitleChange = function (this: App, ev: any, id: Number): void {
-        this.setState({
-            columnList: this.state.columnList.map((el: { id: Number, title: string }) => {
-                if (el.id === id) {
-                    el.title = ev.target.value
-                }
-                return el
-            })
-        })
-
-    };
-
     saveStateInLocalStorage(): void {
-        storage(STORAGE_GLOBAL_STORE, JSON.stringify(this.state));
+        storage(STORAGE_GLOBAL_STORE, JSON.stringify({
+            columnData: this.props.columnData,
+            ...this.state
+        }));
     }
 
     memorizeChangesInHistory(): void {
@@ -121,10 +123,16 @@ class App extends Component <stateInterface, any> {
             storageData = JSON.parse(history);
 
         if (storageData.length <= max_availible_history_length) {
-            storageData.push(this.state);
+            storageData.push({
+                columnData: this.props.columnData,
+                ...this.state
+            });
         } else {
             storageData.shift();
-            storageData.push(this.state);
+            storageData.push({
+                columnData: this.props.columnData,
+                ...this.state
+            });
         }
         storage(STORAGE_HISTORY, JSON.stringify(storageData));
         this.setState({historyStep: storageData.length - 1})
@@ -147,7 +155,11 @@ class App extends Component <stateInterface, any> {
 
         if (storageData) {
             storageData = JSON.parse(storageData);
-            this.setState(storageData)
+            this.props.dispatch(setColumnData({
+                columnData: storageData.columnData
+            }));
+            delete storageData.columnData
+            this.setState(storageData);
         }
 
         if (storageHistory) {
@@ -165,23 +177,24 @@ class App extends Component <stateInterface, any> {
         window.addEventListener('keydown', this.detectKeyboardCombination);
     }
 
+    columnTitleChange = function (this: App, ev: any, id: Number, forceMemoryUpdate?: boolean): void {
+        this.props.dispatch(updateColumnTitle({ev, id}));
+        if (forceMemoryUpdate) {
+            setTimeout(this.memorizeChangesInHistory.bind(this))
+        }
+    };
+
     addColumn(title: string) {
-        const id = calculateNextId(this.state.columnList);
+        const id = calculateNextId(this.props.columnData);
         const newColumn = new ColumnModel({
             title,
             id
         });
-        let currentColumns = [...this.state.columnList];
-        currentColumns.push(newColumn);
-
-        this.setState({
-            columnList: currentColumns
-        });
-
+        this.props.dispatch(addColumn(newColumn));
         setTimeout(this.memorizeChangesInHistory.bind(this))
     }
 
-    addCart(columnId: number) {
+    toggleCartEditor(columnId: number) {
         this.setState({
             modalCart: {
                 columnId: columnId,
@@ -217,31 +230,21 @@ class App extends Component <stateInterface, any> {
     }
 
     removeCart(columnId: number, cartId: number) {
-        let currentState = [...this.state.columnList];
-        let updatedCartList = currentState.find((el: any) => el.id === columnId).carts.filter((cart: any) => {
-            return cart.id !== cartId
-        });
-        currentState.forEach((el) => {
-            if (el.id === columnId) {
-                el.carts = updatedCartList
-            }
-        });
-        this.setState({
-            columnList: currentState
-        });
+        this.props.dispatch(removeCart({
+            columnId,
+            cartId
+        }));
         this.closeModal(CART_MODAL_WINDOW);
         setTimeout(this.memorizeChangesInHistory.bind(this));
     }
 
     removeColumn(columnId) {
-        let currentState = [...this.state.columnList];
-        currentState = currentState.filter(el => el.id !== columnId);
-        this.setState({columnList: currentState});
+        this.props.dispatch(removeColumn({columnId}));
         setTimeout(this.memorizeChangesInHistory.bind(this));
     }
 
-    editCart(columnId: number, cartId: number) {
-        const cartToEdit = this.state.columnList.find((el: any) => {
+    openCartForEdit(columnId: number, cartId: number) {
+        const cartToEdit = this.props.columnData.find((el: any) => {
             return el.id === columnId
         }).carts.find((el: any) => {
             return el.id === cartId
@@ -253,7 +256,6 @@ class App extends Component <stateInterface, any> {
                 isOpened: !this.state.modalCart.isOpened
             }
         });
-        setTimeout(this.memorizeChangesInHistory.bind(this))
     }
 
     submitCartInfo(val: {
@@ -265,35 +267,23 @@ class App extends Component <stateInterface, any> {
         type: string
     }) {
         if (val.type === UPDATE_CART) {
-            updateCart.call(this)
+            const {columnId, cartId, color, title, text} = val;
+            this.props.dispatch(updateCart({
+                columnId,
+                cartId,
+                color,
+                title,
+                text
+            }));
+            this.closeModal(CART_MODAL_WINDOW);
+            setTimeout(this.memorizeChangesInHistory.bind(this))
         } else if (val.type === ADD_NEW_CART) {
             addNewCart.call(this)
         }
 
-        function updateCart(this: any) {
-            const currentState = [...this.state.columnList];
-            currentState.map((el: any) => {
-                if (el.id === val.columnId) {
-                    el.carts.map((el: any) => {
-                        if (el.id === val.cartId) {
-                            el.color = val.color;
-                            el.title = val.title;
-                            el.text = val.text;
-                        }
-                        return el
-                    })
-                }
-                return el
-            });
-            this.setState({
-                columnList: currentState
-            });
-            this.closeModal(CART_MODAL_WINDOW);
-            setTimeout(this.memorizeChangesInHistory.bind(this))
-        }
 
         function addNewCart(this: any) {
-            const id = calculateNextId(this.state.columnList.filter((el: { id: number }) => el.id === val.columnId)[0].carts);
+            const id = calculateNextId(this.props.columnData.filter((el: { id: number }) => el.id === val.columnId)[0].carts);
             const newCart: any = new CartModel({
                 color: val.color,
                 text: val.text,
@@ -301,17 +291,10 @@ class App extends Component <stateInterface, any> {
                 columnId: val.columnId,
                 id
             });
-
-            const currentState = [...this.state.columnList];
-            currentState.map((el: { id: number, carts: Array<object> }) => {
-                if (el.id === val.columnId) {
-                    el.carts.push(newCart);
-                }
-                return el
-            });
-            this.setState({
-                columnList: currentState
-            });
+            this.props.dispatch(addCart({
+                columnId: val.columnId,
+                cart: newCart
+            }));
             this.closeModal(CART_MODAL_WINDOW);
             setTimeout(this.memorizeChangesInHistory.bind(this))
         }
@@ -333,37 +316,12 @@ class App extends Component <stateInterface, any> {
         cartIndex: number,
         cartOldIndex: number
     }) {
-        if (input.columnId !== output.columnId) {
-            let initialState = [...this.state.columnList];
-            let draggedCart = [...this.state.columnList].find((el: any) => el.id === input.columnId).carts.find((el: any) => el.id === input.cartId);
-
-            initialState.forEach((el: any) => {
-                if (el.id === output.columnId) {
-                    draggedCart.id = calculateNextId(el.carts);
-                    draggedCart.columnId = output.columnId;
-                    el.carts.splice(output.cartIndex, 0, draggedCart)
-                }
-
-                if (el.id === input.columnId) {
-                    el.carts.splice(output.cartOldIndex, 1)
-                }
-
-            });
-            this.setState({columnList: initialState});
-            setTimeout(this.memorizeChangesInHistory.bind(this))
-        }
-        if (input.columnId === output.columnId && output.cartIndex !== output.cartOldIndex) {
-            let initialState = [...this.state.columnList];
-
-            initialState.forEach((el: any) => {
-                if (el.id === input.columnId) {
-                    const elToReplace = el.carts.splice(output.cartOldIndex, 1);
-                    el.carts.splice(output.cartIndex, 0, elToReplace[0]);
-                }
-            });
-            this.setState({columnList: initialState});
-            setTimeout(this.memorizeChangesInHistory.bind(this))
-        }
+        const memorizeCb = this.memorizeChangesInHistory.bind(this);
+        this.props.dispatch(transferDraggbleCart({
+            input,
+            output,
+            memorizeCb
+        }));
     }
 
     setStateFromHistory(type: string) {
@@ -377,7 +335,12 @@ class App extends Component <stateInterface, any> {
             historyStep = historyStep + step
         }
 
-        this.setState({...history[historyStep]});
+        const stateToSet = history[historyStep];
+        this.props.dispatch(setColumnData({
+            columnData: stateToSet.columnData
+        }));
+        delete stateToSet.columnData;
+        this.setState({...stateToSet});
         this.setState({historyStep})
     }
 
@@ -392,105 +355,18 @@ class App extends Component <stateInterface, any> {
     }
 
     navigateCart(ev: any, columnId: number, cartId: number) {
-        const targetEl = ev.target;
-        const usedKeys = {
-            arrowTop: 'ArrowUp',
-            arrowDown: 'ArrowDown',
-            arrowLeft: 'ArrowLeft',
-            arrowRight: 'ArrowRight',
-            enter: 'Enter',
-        };
-        const verticalDirection = [usedKeys.arrowTop, usedKeys.arrowDown].indexOf(ev.key) !== -1 ? ev.key : null;
-        const horizontalDirection = [usedKeys.arrowLeft, usedKeys.arrowRight].indexOf(ev.key) !== -1 ? ev.key : null;
-        const isEnterClicked = ev.key === usedKeys.enter;
-
-        if (verticalDirection) {
-            const currentState = [...this.state.columnList];
-            const step = verticalDirection === usedKeys.arrowTop ? -1 : 1;
-            const nextEl = verticalDirection === usedKeys.arrowTop ? targetEl.previousSibling : targetEl.nextSibling
-            let cartIndex,
-                columnIndex,
-                _maxIndex,
-                _minIndex = 0;
-
-            currentState.map((el: any, index: number) => {
-                if (el.id === columnId) {
-                    columnIndex = index;
-                    cartIndex = el.carts.map((el: any) => el.id).indexOf(cartId);
-                    _maxIndex = el.carts.length - 1;
-                }
-            });
-
-            const indexToReach = cartIndex + step;
-            if (_minIndex <= indexToReach && indexToReach <= _maxIndex) {
-                let carts = currentState[columnIndex].carts;
-                const replacedItem = carts.splice(indexToReach, 1, carts[cartIndex]);
-                carts.splice(cartIndex, 1, replacedItem[0]);
-
-                this.setState({columnList: currentState});
-                setTimeout(() => {
-                    nextEl.focus();
-                    this.memorizeChangesInHistory.bind(this);
-                });
-            }
-        }
-
-        if (horizontalDirection) {
-            const currentState = [...this.state.columnList];
-            const step = horizontalDirection === usedKeys.arrowLeft ? -1 : 1;
-            const nextColumn = horizontalDirection === usedKeys.arrowLeft ? ev.target.offsetParent.previousSibling : ev.target.offsetParent.nextSibling
-            let cartIndex,
-                columnIndex,
-                _maxIndex = currentState.length - 1,
-                _minIndex = 0;
-
-            currentState.map((el: any, index: number) => {
-                if (el.id === columnId) {
-                    columnIndex = index;
-                    cartIndex = el.carts.map((el: any) => el.id).indexOf(cartId);
-                }
-            });
-
-            const columnToReach = columnIndex + step;
-            if (_minIndex <= columnToReach && columnToReach <= _maxIndex) {
-                let carts = currentState[columnIndex].carts;
-                const movedCart = carts.splice(cartIndex, 1)[0];
-
-                let movedCartIndex = currentState[columnToReach].carts.length > cartIndex ? cartIndex : currentState[columnToReach].carts.length;
-                currentState[columnToReach].carts.splice(movedCartIndex, 0, movedCart);
-
-                this.setState({columnList: currentState});
-                setTimeout(() => {
-                    const el = nextColumn.getElementsByClassName('column-cart')[movedCartIndex];
-                    if (el) el.focus()
-                    this.memorizeChangesInHistory.bind(this)
-                })
-            }
-        }
-
-        if (isEnterClicked) this.editCart(columnId, cartId);
+        const memorizeCb = this.memorizeChangesInHistory.bind(this);
+        this.props.dispatch(navigateCart({ev, columnId, cartId, memorizeCb}));
+        if (ev.key === 'Enter') this.openCartForEdit(columnId, cartId);
     }
 
     filterCarts(ev: any) {
-        const valueToFind = ev.target.value.trim();
-        let history: any = storage(STORAGE_HISTORY);
-        history = JSON.parse(history);
+        let history = storage(STORAGE_HISTORY);
 
-        let currentState = history[history.length - 1].columnList;
-
-        if (valueToFind && valueToFind.length > 1) {
-            let resultState = currentState.filter((el: any) => {
-                el.carts = el.carts.filter((el) => {
-                    let elString = el.title + ' ' + el.text;
-                    return elString.toLowerCase().indexOf(valueToFind.toLowerCase()) !== -1;
-                });
-                return el.carts.length
-            });
-            this.setState({columnList: resultState})
-        } else {
-            this.setState({columnList: currentState})
-        }
-
+        this.props.dispatch(filterCarts({
+            history,
+            ev
+        }))
     }
 
     setBackgroundStyle(backgroundColor?: string, backgroundImage?: string) {
@@ -534,10 +410,10 @@ class App extends Component <stateInterface, any> {
                                  filterCarts={this.filterCarts}
                                  showCustomizeModal={this.showCustomizeModal}/>
                 <ContentComponent columnTitleChange={this.columnTitleChange}
-                                  columnList={this.state.columnList}
+                                  columnData={this.props.columnData}
                                   addColumn={this.addColumn}
-                                  addCart={this.addCart}
-                                  editCart={this.editCart}
+                                  toggleCartEditor={this.toggleCartEditor}
+                                  openCartForEdit={this.openCartForEdit}
                                   isAddColumnButtonEditable={this.state.isAddColumnButtonEditable}
                                   onChangeDrag={this.onChangeDrag}
                                   removeColumn={this.removeColumn}
@@ -549,4 +425,6 @@ class App extends Component <stateInterface, any> {
     }
 }
 
-export default App;
+
+export default connect((state) => ({columnData: state.columnData}))(App)
+

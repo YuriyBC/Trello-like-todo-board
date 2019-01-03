@@ -3,13 +3,13 @@ import ColumnComponent from '../ColumnComponent'
 import AddColumnButton from '../AddColumnButton'
 
 interface ContentComponentInterface {
-    columnList: Array<{
+    columnDara: Array<{
         id: number,
         title: string,
         carts: Array<object>
     }>,
-    editCart: () => void,
-    addCart: () => void,
+    openCartForEdit: () => void,
+    toggleCartEditor: () => void,
     addColumn: () => void,
     columnTitleChange: any
     onChangeDrag: () => void,
@@ -51,15 +51,15 @@ export class ContentComponent extends React.Component <any, any> {
     }
 
     render() {
-        const columnList: any = this.props.columnList.map((column: {
+        const columnData: any = this.props.columnData.map((column: {
             title: string,
             carts: Array<object>,
             id: number
         }) => {
             return <ColumnComponent title={column.title}
-                                    editCart={this.props.editCart}
+                                    openCartForEdit={this.props.openCartForEdit}
                                     carts={column.carts}
-                                    addCart={this.props.addCart}
+                                    toggleCartEditor={this.props.toggleCartEditor}
                                     navigateCart={this.props.navigateCart}
                                     columnTitleChange={this.props.columnTitleChange}
                                     removeColumn={this.props.removeColumn}
@@ -69,7 +69,7 @@ export class ContentComponent extends React.Component <any, any> {
         });
 
         return <div className="columns-wrapper">
-            {columnList}
+            {columnData}
             <AddColumnButton toggleEditMode={this.toggleEditMode}
                              isAddColumnButtonEditable={this.state.isAddColumnButtonEditable}
                              formRef={this.state.formRef}

@@ -1,11 +1,12 @@
 import * as React from "react";
 import imgEdit from '../img/ic-edit.png';
 import '../styles/CartComponent.scss'
+import {removeFocusFromAllElements} from '../utils/methods'
 
 interface CartComponentProps {
     title: string,
     text: string,
-    editCart: any,
+    openCartForEdit: any,
     color: string,
     id: number,
     navigateCart: any
@@ -20,16 +21,23 @@ const CartComponent = (props: CartComponentProps) => {
             string.substring(0, MAX_LENGTH) + "..." : string;
     }
 
+    function handleClick (ev: any) {
+        ev.preventDefault();
+        if (document.activeElement === ev.currentTarget) {
+            ev.currentTarget.blur()
+        } else {
+            ev.currentTarget.focus();
+        }
+    }
+
     return <div className="column-cart"
                 tabIndex={0}
                 onKeyDown={props.navigateCart}
                 data-id={props.id}
-                onClick={(ev: any) => {
-                    ev.target.focus()
-                }}
+                onMouseDown={handleClick}
                 style={style}>
         <img className="column-cart__icon"
-             onClick={props.editCart}
+             onClick={props.openCartForEdit}
              src={imgEdit}
              alt=""/>
         <span>{props.title}</span>
