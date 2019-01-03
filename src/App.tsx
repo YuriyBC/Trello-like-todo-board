@@ -155,7 +155,7 @@ class App extends Component <stateInterface, any> {
 
         if (storageData) {
             storageData = JSON.parse(storageData);
-            this.props.dispatch(setColumnData({
+            storageData.columnData && this.props.dispatch(setColumnData({
                 columnData: storageData.columnData
             }));
             delete storageData.columnData

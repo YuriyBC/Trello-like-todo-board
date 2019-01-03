@@ -42,16 +42,24 @@ const CartList = (props: any) => {
                 outputDraggedInfo = {};
             },
             onUpdate: (ev) => {
+                console.log('sdc')
                 outputDraggedInfo = {
                     columnId: +props.id,
                     cartIndex: +ev.newIndex,
                     cartOldIndex: +ev.oldIndex
                 };
                 props.onChangeDrag(inputDraggedInfo, outputDraggedInfo)
+            },
+            onEnd: (ev) => {
+                setTimeout(() => {
+                    ev.item.style.display = 'block';
+                }, 200)
+            },
+            onClone: (ev) => {
+                ev.item.style.display = 'none';
             }
         }}
-        onChange={(order) => {
-        }}>
+        onChange={() => {}}>
         {list}
     </Sortable>
 };
