@@ -1,8 +1,8 @@
 import React, {Component} from 'react';
 import { connect } from 'react-redux'
 import './styles/App.scss';
-import {HeaderComponent} from "./components/blocks/HeaderComponent";
-import {ContentComponent} from "./components/blocks/ContentComponent";
+import {HeaderComponent} from "./components/containers/HeaderComponent";
+import {ContentComponent} from "./components/containers/ContentComponent";
 import {UpdateCartModal} from './components/UpdateCartModal'
 import {CustomizeModalComponent} from './components/CustomizeModalComponent'
 
