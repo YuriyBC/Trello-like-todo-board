@@ -47,7 +47,6 @@
     font-weight: bold;
     color: #17394d;
     height: 18px;
-
     max-height: 100px;
     &:focus {
       background: white;
@@ -94,7 +93,7 @@
 .column-carts {
   padding: 0 8px;
   & > div {
-    min-height: 5px;
+    min-height: 10px;
   }
 }
 

@@ -60,7 +60,6 @@ export class ContentComponent extends React.Component <any, any> {
                                     openCartForEdit={this.props.openCartForEdit}
                                     carts={column.carts}
                                     toggleCartEditor={this.props.toggleCartEditor}
-                                    navigateCart={this.props.navigateCart}
                                     columnTitleChange={this.props.columnTitleChange}
                                     removeColumn={this.props.removeColumn}
                                     key={column.id}

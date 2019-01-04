@@ -1,6 +1,6 @@
 // https://github.com/YuriyBC/Helphul-javascript-methods
 
-function calculateNextId (arr) {
+function calculateNextId(arr) {
     let idCollection = arr.map((el) => el.id);
     let id = 0;
 
@@ -13,7 +13,11 @@ function calculateNextId (arr) {
     return id
 }
 
-function storage (...args) {
+function generateRandomId() {
+    return Math.floor((Math.random() * 1000) + 1);
+}
+
+function storage(...args) {
     if (args.length === 1) {
         return window.localStorage.getItem(args[0])
     } else if (args.length === 2) {
@@ -21,15 +25,32 @@ function storage (...args) {
     }
 }
 
-function removeFocusFromAllElements () {
+function removeFocusFromAllElements() {
     const tmp = document.createElement('input');
     document.body.appendChild(tmp);
     tmp.focus();
     document.body.removeChild(tmp);
 }
 
+var inThrottle = false
+
+function throttle(func, limit) {
+    if (inThrottle) {
+        return
+    }
+    if (!inThrottle) {
+        inThrottle = true
+        func()
+        setTimeout(() => {
+            inThrottle = false
+        }, limit)
+    }
+}
+
 export {
     calculateNextId,
     storage,
-    removeFocusFromAllElements
+    removeFocusFromAllElements,
+    throttle,
+    generateRandomId
 }

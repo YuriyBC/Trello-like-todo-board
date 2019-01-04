@@ -9,7 +9,7 @@ interface CartComponentProps {
     openCartForEdit: any,
     color: string,
     id: number,
-    navigateCart: any
+    columnId: number
 }
 
 const CartComponent = (props: CartComponentProps) => {
@@ -23,8 +23,11 @@ const CartComponent = (props: CartComponentProps) => {
 
     return <div className="column-cart"
                 tabIndex={0}
-                onKeyDown={props.navigateCart}
+                data-column={props.columnId}
                 data-id={props.id}
+                onKeyDown={(ev) => {
+                    ev.key === 'Enter' && props.openCartForEdit()
+                }}
                 style={style}>
         <img className="column-cart__icon"
              onClick={props.openCartForEdit}

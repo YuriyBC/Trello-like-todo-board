@@ -27,14 +27,15 @@
     }
   }
   &:focus {
-    filter: brightness(80%);
     outline: none;
+    filter: brightness(80%);
   }
   span, p {
     padding: 5px 10px;
   }
   p {
     margin: 0;
+    word-break: break-all;
     word-break: break-word;
   }
   span {

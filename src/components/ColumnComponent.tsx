@@ -41,7 +41,7 @@ export default class ColumnComponent extends React.Component <any, any> {
         element.style.height = (element.scrollHeight) + "px";
     }
 
-    handleBlur (ev: React.SyntheticEvent) {
+    handleBlur(ev: React.SyntheticEvent) {
         this.props.columnTitleChange(ev, this.props.id, true);
     }
 
@@ -85,7 +85,6 @@ export default class ColumnComponent extends React.Component <any, any> {
                 <CartList openCartForEdit={this.props.openCartForEdit}
                           id={this.props.id}
                           onChangeDrag={this.props.onChangeDrag}
-                          navigateCart={this.props.navigateCart}
                           onDropCart={this.props.onDropCart}
                           carts={this.props.carts}/>
             </div>

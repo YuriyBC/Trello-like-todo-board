@@ -1,5 +1,3 @@
-import {calculateNextId} from '../../utils/methods'
-
 const initialState = [{
     id: 0,
     title: 'Stuff To Try (this is a list)',
@@ -113,7 +111,6 @@ function transferDraggbleCart(state, action) {
 
         initialState.forEach((el) => {
             if (el.id === output.columnId) {
-                draggedCart.id = calculateNextId(el.carts);
                 draggedCart.columnId = output.columnId;
                 el.carts.splice(output.cartIndex, 0, draggedCart)
             }
@@ -144,10 +141,8 @@ function transferDraggbleCart(state, action) {
 
 
 function navigateCart(state, action) {
-    const {ev, columnId, cartId, memorizeCb} = action.payload;
+    const {ev, columnId, cartIndex, target, memorizeCb} = action.payload;
 
-    let valueToReturn;
-    const targetEl = ev.target;
     const usedKeys = {
         arrowTop: 'ArrowUp',
         arrowDown: 'ArrowDown',
@@ -157,57 +152,41 @@ function navigateCart(state, action) {
     const verticalDirection = [usedKeys.arrowTop, usedKeys.arrowDown].indexOf(ev.key) !== -1 ? ev.key : null;
     const horizontalDirection = [usedKeys.arrowLeft, usedKeys.arrowRight].indexOf(ev.key) !== -1 ? ev.key : null;
 
-
     if (verticalDirection) {
         const currentState = [...state];
         const step = verticalDirection === usedKeys.arrowTop ? -1 : 1;
-        const nextEl = verticalDirection === usedKeys.arrowTop ? targetEl.previousSibling : targetEl.nextSibling
-        let cartIndex,
-            columnIndex,
-            _maxIndex,
+        const nextEl = verticalDirection === usedKeys.arrowTop ? target.previousSibling : target.nextSibling
+
+        let _maxIndex = currentState[columnId].carts.length - 1,
             _minIndex = 0;
 
-        currentState.forEach((el, index) => {
-            if (el.id === columnId) {
-                columnIndex = index;
-                cartIndex = el.carts.map((el) => el.id).indexOf(cartId);
-                _maxIndex = el.carts.length - 1;
-            }
-        });
 
         const indexToReach = cartIndex + step;
         if (_minIndex <= indexToReach && indexToReach <= _maxIndex) {
-            let carts = currentState[columnIndex].carts;
+            let carts = currentState[columnId].carts;
+
             const replacedItem = carts.splice(indexToReach, 1, carts[cartIndex]);
             carts.splice(cartIndex, 1, replacedItem[0]);
 
-            valueToReturn = currentState
+            if (nextEl) nextEl.focus();
+
             setTimeout(() => {
-                nextEl.focus();
                 memorizeCb()
             });
+            return currentState;
         }
     }
 
     if (horizontalDirection) {
         const currentState = [...state];
         const step = horizontalDirection === usedKeys.arrowLeft ? -1 : 1;
-        const nextColumn = horizontalDirection === usedKeys.arrowLeft ? ev.target.offsetParent.previousSibling : ev.target.offsetParent.nextSibling
-        let cartIndex,
-            columnIndex,
-            _maxIndex = currentState.length - 1,
+        const nextColumn = horizontalDirection === usedKeys.arrowLeft ? target.offsetParent.previousSibling : target.offsetParent.nextSibling
+        let _maxIndex = currentState.length - 1,
             _minIndex = 0;
 
-        currentState.forEach((el, index) => {
-            if (el.id === columnId) {
-                columnIndex = index;
-                cartIndex = el.carts.map((el) => el.id).indexOf(cartId);
-            }
-        });
-
-        const columnToReach = columnIndex + step;
+        const columnToReach = columnId + step;
         if (_minIndex <= columnToReach && columnToReach <= _maxIndex) {
-            let carts = currentState[columnIndex].carts;
+            let carts = currentState[columnId].carts;
             const movedCart = carts.splice(cartIndex, 1)[0];
 
             let movedCartIndex = currentState[columnToReach].carts.length > cartIndex ? cartIndex : currentState[columnToReach].carts.length;
@@ -218,13 +197,10 @@ function navigateCart(state, action) {
                 if (el) el.focus();
                 memorizeCb()
             });
-            valueToReturn = currentState
+            return currentState
         }
     }
-    if (!valueToReturn) {
-        return valueToReturn = state
-    }
-    return valueToReturn
+    return state
 }
 
 function filterCarts(state, action) {

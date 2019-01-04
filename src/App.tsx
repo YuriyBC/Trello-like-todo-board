@@ -27,7 +27,9 @@ import {
 import {
     calculateNextId,
     storage,
-    removeFocusFromAllElements
+    removeFocusFromAllElements,
+    throttle,
+    generateRandomId
 } from './utils/methods'
 
 import {
@@ -100,14 +102,9 @@ class App extends Component <stateInterface, any> {
 
         // navigation
         this.detectKeyboardCombination = this.detectKeyboardCombination.bind(this);
-        this.navigateCart = this.navigateCart.bind(this);
 
         //styles
         this.setBackgroundStyle = this.setBackgroundStyle.bind(this);
-    }
-
-    componentDidUpdate() {
-        this.saveStateInLocalStorage();
     }
 
     saveStateInLocalStorage(): void {
@@ -139,6 +136,7 @@ class App extends Component <stateInterface, any> {
     }
 
     componentWillUnmounted() {
+        this.saveStateInLocalStorage();
         let storageData: any = storage(STORAGE_HISTORY);
         storageData = JSON.parse(storageData);
         storageData = storageData.slice(0, this.state.historyStep + 1);
@@ -281,9 +279,8 @@ class App extends Component <stateInterface, any> {
             addNewCart.call(this)
         }
 
-
         function addNewCart(this: any) {
-            const id = calculateNextId(this.props.columnData.filter((el: { id: number }) => el.id === val.columnId)[0].carts);
+            const id = generateRandomId()
             const newCart: any = new CartModel({
                 color: val.color,
                 text: val.text,
@@ -352,12 +349,27 @@ class App extends Component <stateInterface, any> {
             this.closeModal(ALL_MODALS);
             removeFocusFromAllElements();
         }
-    }
 
-    navigateCart(ev: any, columnId: number, cartId: number) {
-        const memorizeCb = this.memorizeChangesInHistory.bind(this);
-        this.props.dispatch(navigateCart({ev, columnId, cartId, memorizeCb}));
-        if (ev.key === 'Enter') this.openCartForEdit(columnId, cartId);
+        if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].indexOf(ev.key) >= 0 && document.activeElement) {
+            let allCarts = Array.from(document.getElementsByClassName('column-cart'));
+            let focusedEl: any = allCarts.filter(el => el === document.activeElement)[0];
+            if (focusedEl) {
+                let focusedColumn = Array.from(document.getElementsByClassName('column')).filter(el => el.contains(focusedEl))[0];
+                let columnCarts = Array.from(focusedColumn.getElementsByClassName('column-cart'));
+
+                const THROTTLE_TIME = 200;
+                const memorizeCb = this.memorizeChangesInHistory.bind(this);
+
+                throttle(() => {
+                    this.props.dispatch(navigateCart({
+                        ev,
+                        columnId: +focusedEl.dataset.column,
+                        target: focusedEl,
+                        cartIndex: columnCarts.indexOf(focusedEl),
+                        memorizeCb}))
+                }, THROTTLE_TIME)
+            }
+        }
     }
 
     filterCarts(ev: any) {
@@ -416,8 +428,7 @@ class App extends Component <stateInterface, any> {
                                   openCartForEdit={this.openCartForEdit}
                                   isAddColumnButtonEditable={this.state.isAddColumnButtonEditable}
                                   onChangeDrag={this.onChangeDrag}
-                                  removeColumn={this.removeColumn}
-                                  navigateCart={this.navigateCart}/>
+                                  removeColumn={this.removeColumn}/>
                 {modalCart}
                 {modalCustomize}
             </div>
