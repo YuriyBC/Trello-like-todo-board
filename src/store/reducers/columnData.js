@@ -23,7 +23,7 @@ const columnData = (state = initialState, action) => {
             return removeCard(state, action);
         case 'REMOVE_COLUMN':
             return removeColumn(state, action);
-        case 'TRANSFER_DRAGGBLE_CARD':
+        case 'TRANSFER_DRAGGABLE_CARD':
             return transferDraggbleCard(state, action);
         case 'NAVIGATE_CARD':
             return navigateCard(state, action);

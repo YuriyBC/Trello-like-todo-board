@@ -14,7 +14,9 @@ export class HeaderComponent extends React.Component <any, any> {
         this.state = {
             isDropDownHidden: false
         };
-        this.showDropdownContent = this.showDropdownContent.bind(this)
+        this.showDropdownContent = this.showDropdownContent.bind(this);
+        this.getClassIcon = this.getClassIcon.bind(this);
+        this.setStateFromHistory = this.setStateFromHistory.bind(this);
     }
 
     showDropdownContent(forceState?: boolean) {
@@ -23,14 +25,41 @@ export class HeaderComponent extends React.Component <any, any> {
         })
     }
 
-    render() {
+    getClassIcon (type: string) {
         let storageHistory: any = localStorage.getItem('history');
         storageHistory = JSON.parse(storageHistory);
         const isPrevIconActive = this.props.historyStep > 0;
         const isNextIconActive = storageHistory && this.props.historyStep < storageHistory.length - 1;
 
-        const prevIconClass: string = isPrevIconActive ? 'active' : 'disable';
-        const nextIconClass: string = isNextIconActive ? 'active' : 'disable';
+        switch (type) {
+            case 'prev':
+                return isPrevIconActive ? 'active' : 'disable';
+            case 'next':
+                return isNextIconActive ? 'active' : 'disable';
+            default:
+                return 'default'
+        }
+    }
+
+    setStateFromHistory (type: string, currentClass: string) {
+        switch (type) {
+            case 'prev':
+                if (currentClass === 'active') {
+                    this.props.setStateFromHistory('prev')
+                }
+                break;
+            case 'next':
+                if (currentClass === 'active') {
+                    this.props.setStateFromHistory('next')
+                }
+                break;
+        }
+    }
+
+
+    render() {
+        const prevIconClass = this.getClassIcon('prev');
+        const nextIconClass = this.getClassIcon('next');
 
         return <div className="header">
             <div className="header-search">
@@ -38,18 +67,18 @@ export class HeaderComponent extends React.Component <any, any> {
             </div>
             <div className="header-inner">
                 <a href="/">
-                    <div className="header-logo"></div>
+                    <div className="header-logo"/>
                 </a>
             </div>
             <div className="header-buttons">
                 <div className="header-buttons__arrows">
                     <button className={prevIconClass}
-                            onClick={() => isPrevIconActive && this.props.setStateFromHistory('prev')}>
+                            onClick={() => this.setStateFromHistory('prev', prevIconClass)}>
                         <img tabIndex={-1}
                              src={icDir} alt=""/>
                     </button>
                     <button className={nextIconClass}
-                            onClick={() => isNextIconActive && this.props.setStateFromHistory('next')}>
+                            onClick={() => this.setStateFromHistory('next', nextIconClass)}>
                         <img tabIndex={-1}
                              src={icDir} alt=""/>
                     </button>
@@ -57,7 +86,7 @@ export class HeaderComponent extends React.Component <any, any> {
                 <div tabIndex={0}
                      className="header-buttons__add"
                      onClick={() => this.showDropdownContent()}>
-                    <div className="header-buttons__add__shadow"></div>
+                    <div className="header-buttons__add__shadow"/>
                     <div className="header-buttons__drop-content"
                          onMouseLeave={() => {
                              setTimeout(() => {

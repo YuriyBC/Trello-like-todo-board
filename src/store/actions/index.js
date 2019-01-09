@@ -35,7 +35,7 @@ export const removeCard = (payload) => ({
 });
 
 export const transferDraggbleCard = (payload) => ({
-    type: 'TRANSFER_DRAGGBLE_CARD',
+    type: 'TRANSFER_DRAGGABLE_CARD',
     payload
 });
 
