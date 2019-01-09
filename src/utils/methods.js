@@ -47,10 +47,17 @@ function throttle(func, limit) {
     }
 }
 
+function trimString(string) {
+    let MAX_LENGTH = 350;
+    return string.length > MAX_LENGTH ?
+        string.substring(0, MAX_LENGTH) + "..." : string;
+}
+
 export {
     calculateNextId,
     storage,
     removeFocusFromAllElements,
     throttle,
-    generateRandomId
+    generateRandomId,
+    trimString
 }

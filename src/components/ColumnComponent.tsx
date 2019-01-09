@@ -28,12 +28,12 @@ export default class ColumnComponent extends React.Component <any, any> {
         this.handleBlur = this.handleBlur.bind(this);
     }
 
-    resizeTextArea(ev?: any): void {
+    resizeTextArea(event?: any): void {
         let element: HTMLElement = this.state.textAreaRef.current;
 
-        if (!ev) return;
-        if (ev && ev.key === 'Enter' && !ev.shiftKey) {
-            ev.preventDefault();
+        if (!event) return;
+        if (event && event.key === 'Enter' && !event.shiftKey) {
+            event.prevententDefault();
             element.blur();
             return
         }
@@ -41,14 +41,14 @@ export default class ColumnComponent extends React.Component <any, any> {
         element.style.height = (element.scrollHeight) + "px";
     }
 
-    handleBlur(ev: React.SyntheticEvent) {
-        this.props.columnTitleChange(ev, this.props.id, true);
+    handleBlur(event: React.SyntheticEvent) {
+        this.props.columnTitleChange(event, this.props.id, true);
     }
 
     componentDidMount() {
-        let el: any = document.getElementsByClassName('column-header__title')[0];
-        el.style.height = "5px";
-        el.style.height = (el.scrollHeight) + "px";
+        let element: any = document.getElementsByClassName('column-header__title')[0];
+        element.style.height = "5px";
+        element.style.height = (element.scrollHeight) + "px";
         setTimeout(() => {
             this.resizeTextArea()
         })
@@ -71,7 +71,7 @@ export default class ColumnComponent extends React.Component <any, any> {
         return <div className="column"
                     onMouseLeave={() => this.toggleColumnDropdown(false)}>
             <div className="column-header">
-                <textarea onChange={(ev) => this.props.columnTitleChange(ev, this.props.id)}
+                <textarea onChange={(event) => this.props.columnTitleChange(event, this.props.id)}
                           value={this.props.title}
                           ref={this.state.textAreaRef}
                           onBlur={this.handleBlur}

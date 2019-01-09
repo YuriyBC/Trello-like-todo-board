@@ -2,16 +2,19 @@ import * as React from 'react';
 import CartComponent from './CartItem'
 import Sortable from 'react-sortablejs';
 
+
+interface CartInterface {
+    title: string,
+    id: number,
+    color: string
+    text: string
+}
+
 let inputDraggedInfo = {};
 let outputDraggedInfo = {};
 
 const CartList = (props: any) => {
-    const list = props.carts.map((cart: {
-        title: string,
-        id: number,
-        color: string
-        text: string
-    }, id: number) => {
+    const list = props.carts.map((cart: CartInterface, id: number) => {
         return <CartComponent key={id}
                               id={cart.id}
                               columnId={props.id}

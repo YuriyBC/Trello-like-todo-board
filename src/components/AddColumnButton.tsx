@@ -26,6 +26,12 @@ export default function AddColumnButton(props: AddColumnButtonProps) {
 
     }
 
+    function columnNameKeypressHandler (ev) {
+        if (ev && ev.key === 'Enter') {
+            props.addColumn()
+        }
+    }
+
     function getAddColumnButton() {
         const isEditable: boolean = props.isAddColumnButtonEditable;
         const defaultMode =
@@ -46,11 +52,7 @@ export default function AddColumnButton(props: AddColumnButtonProps) {
                 <div>
                     <input type="text"
                            ref={props.formRef}
-                           onKeyPress={(ev) => {
-                               if (ev && ev.key === 'Enter') {
-                                   props.addColumn()
-                               }
-                           }}
+                           onKeyPress={columnNameKeypressHandler}
                            placeholder="Enter list title..."/>
                 </div>
                 <div>

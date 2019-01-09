@@ -1,7 +1,7 @@
 import * as React from "react";
 import imgEdit from '../img/ic-edit.png';
-import '../styles/CartComponent.scss'
-import {removeFocusFromAllElements} from '../utils/methods'
+import '../styles/CartComponent.scss';
+import {trimString} from '../utils/methods';
 
 interface CartComponentProps {
     title: string,
@@ -14,12 +14,6 @@ interface CartComponentProps {
 
 const CartComponent = (props: CartComponentProps) => {
     const style = props.color ? {"backgroundColor": props.color} : {};
-
-    function trimString(string: string) {
-        let MAX_LENGTH = 350;
-        return string.length > MAX_LENGTH ?
-            string.substring(0, MAX_LENGTH) + "..." : string;
-    }
 
     return <div className="column-cart"
                 tabIndex={0}
