@@ -1,14 +1,14 @@
 import * as React from "react";
 import '../styles/ColumnComponent.scss'
-import CartList from './CartList'
+import CardList from './CardList'
 
 interface ColumnComponentProps {
     title: string,
     id: number,
-    carts: Array<object>,
+    cards: Array<object>,
     columnTitleChange: any,
-    toggleCartEditor: any,
-    openCartForEdit: () => void,
+    toggleCardEditor: any,
+    openCardForEdit: () => void,
     onChangeDrag: () => void,
     removeColumn: () => void
 }
@@ -18,11 +18,11 @@ export default class ColumnComponent extends React.Component <any, any> {
         super(props);
         this.state = {
             isTitleEditMode: false,
-            isCartCreationMode: false,
+            isCardCreationMode: false,
             textAreaRef: React.createRef(),
             isDropDownOpened: false
         };
-        this.toggleCartCreationMode = this.toggleCartCreationMode.bind(this);
+        this.toggleCardCreationMode = this.toggleCardCreationMode.bind(this);
         this.toggleColumnDropdown = this.toggleColumnDropdown.bind(this);
         this.resizeTextArea = this.resizeTextArea.bind(this);
         this.handleBlur = this.handleBlur.bind(this);
@@ -33,7 +33,6 @@ export default class ColumnComponent extends React.Component <any, any> {
 
         if (!event) return;
         if (event && event.key === 'Enter' && !event.shiftKey) {
-            event.prevententDefault();
             element.blur();
             return
         }
@@ -46,7 +45,7 @@ export default class ColumnComponent extends React.Component <any, any> {
     }
 
     componentDidMount() {
-        let element: any = document.getElementsByClassName('column-header__title')[0];
+        let element: HTMLElement = this.state.textAreaRef.current;
         element.style.height = "5px";
         element.style.height = (element.scrollHeight) + "px";
         setTimeout(() => {
@@ -54,9 +53,9 @@ export default class ColumnComponent extends React.Component <any, any> {
         })
     }
 
-    toggleCartCreationMode() {
+    toggleCardCreationMode() {
         const columnId = this.props.id;
-        this.props.toggleCartEditor(columnId);
+        this.props.toggleCardEditor(columnId);
     }
 
     toggleColumnDropdown(forseState?: boolean) {
@@ -81,15 +80,15 @@ export default class ColumnComponent extends React.Component <any, any> {
                       onClick={() => this.toggleColumnDropdown()}>...</span>
                 {dropdown}
             </div>
-            <div className="column-carts">
-                <CartList openCartForEdit={this.props.openCartForEdit}
+            <div className="column-cards">
+                <CardList openCardForEdit={this.props.openCardForEdit}
                           id={this.props.id}
                           onChangeDrag={this.props.onChangeDrag}
-                          onDropCart={this.props.onDropCart}
-                          carts={this.props.carts}/>
+                          onDropCard={this.props.onDropCard}
+                          cards={this.props.cards}/>
             </div>
             <div className="column-footer">
-                <span onClick={this.toggleCartCreationMode}>Add a cart...</span>
+                <span onClick={this.toggleCardCreationMode}>Add a card...</span>
             </div>
         </div>
     }

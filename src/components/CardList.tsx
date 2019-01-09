@@ -1,9 +1,9 @@
 import * as React from 'react';
-import CartComponent from './CartItem'
+import CardComponent from './CardItem'
 import Sortable from 'react-sortablejs';
 
 
-interface CartInterface {
+interface CardInterface {
     title: string,
     id: number,
     color: string
@@ -13,17 +13,17 @@ interface CartInterface {
 let inputDraggedInfo = {};
 let outputDraggedInfo = {};
 
-const CartList = (props: any) => {
-    const list = props.carts.map((cart: CartInterface, id: number) => {
-        return <CartComponent key={id}
-                              id={cart.id}
+const CardList = (props: any) => {
+        const list = props.cards.map((card: CardInterface, id: number) => {
+        return <CardComponent key={id}
+                              id={card.id}
                               columnId={props.id}
-                              openCartForEdit={() => {
-                                  props.openCartForEdit(props.id, cart.id)
+                              openCardForEdit={() => {
+                                  props.openCardForEdit(props.id, card.id)
                               }}
-                              title={cart.title}
-                              color={cart.color}
-                              text={cart.text}/>
+                              title={card.title}
+                              color={card.color}
+                              text={card.text}/>
     });
     return <Sortable
         options={{
@@ -31,14 +31,14 @@ const CartList = (props: any) => {
             onStart: (ev, sm) => {
                 inputDraggedInfo = {
                     columnId: +props.id,
-                    cartId: +ev.item.dataset.id
+                    cardId: +ev.item.dataset.id
                 }
             },
             onAdd: (ev) => {
                 outputDraggedInfo = {
                     columnId: +props.id,
-                    cartIndex: +ev.newIndex,
-                    cartOldIndex: +ev.oldIndex
+                    cardIndex: +ev.newIndex,
+                    cardOldIndex: +ev.oldIndex
                 };
                 props.onChangeDrag(inputDraggedInfo, outputDraggedInfo)
                 inputDraggedInfo = {};
@@ -47,8 +47,8 @@ const CartList = (props: any) => {
             onUpdate: (ev) => {
                 outputDraggedInfo = {
                     columnId: +props.id,
-                    cartIndex: +ev.newIndex,
-                    cartOldIndex: +ev.oldIndex
+                    cardIndex: +ev.newIndex,
+                    cardOldIndex: +ev.oldIndex
                 };
                 props.onChangeDrag(inputDraggedInfo, outputDraggedInfo)
             }
@@ -59,4 +59,4 @@ const CartList = (props: any) => {
     </Sortable>
 };
 
-export default CartList;
+export default CardList;

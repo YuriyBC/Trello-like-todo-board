@@ -2,11 +2,11 @@ export class ColumnModel {
     constructor({title, id}) {
         this.title = title;
         this.id = id;
-        this.carts = [];
+        this.cards = [];
     }
 }
 
-export class CartModel {
+export class CardModel {
     constructor({id, color, text, title, columnId}) {
         this.id = id;
         this.color = color;

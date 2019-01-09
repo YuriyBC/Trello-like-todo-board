@@ -2,8 +2,8 @@ import * as React from 'react'
 import '../styles/ModalComponent.scss'
 import ImgClose from '../img/ic-close.png'
 import {
-    UPDATE_CART,
-    ADD_NEW_CART,
+    UPDATE_CARD,
+    ADD_NEW_CARD,
     GREEN_COLOR,
     YELLOW_COLOR,
     ORANGE_COLOR,
@@ -22,12 +22,12 @@ interface availibleColorsInterface {
     [propName: string]: string | number | undefined;
 }
 
-interface UpdateCartModalInterface {
-    submitCartInfo: () => void;
+interface UpdateCardModalInterface {
+    submitCardInfo: () => void;
     columnId?: number,
     closeModal: () => void,
-    removeCart: () => void,
-    cartInfo?: {
+    removeCard: () => void,
+    cardInfo?: {
         text: string,
         title: string,
         color: string,
@@ -35,27 +35,27 @@ interface UpdateCartModalInterface {
     }
 }
 
-export class UpdateCartModal extends React.Component <any, any> {
-    constructor(props: UpdateCartModalInterface) {
+export class UpdateCardModal extends React.Component <any, any> {
+    constructor(props: UpdateCardModalInterface) {
         super(props);
         this.state = {
             color: '',
             title: '',
             text: '',
             modalRef: React.createRef(),
-            type: this.props.cartInfo ? UPDATE_CART : ADD_NEW_CART
+            type: this.props.cardInfo ? UPDATE_CARD : ADD_NEW_CARD
         };
         this.setForm = this.setForm.bind(this);
         this.setColor = this.setColor.bind(this);
         this.submitResult = this.submitResult.bind(this);
-        this.removeCart = this.removeCart.bind(this);
+        this.removeCard = this.removeCard.bind(this);
         this.isFormsValid = this.isFormsValid.bind(this);
         this.modalClickHandler = this.modalClickHandler.bind(this)
     }
 
     componentDidMount() {
-        if (this.state.type === UPDATE_CART) {
-            const {color, title, text} = this.props.cartInfo;
+        if (this.state.type === UPDATE_CARD) {
+            const {color, title, text} = this.props.cardInfo;
             this.setState({
                 color: color || null,
                 title: title || '',
@@ -77,8 +77,8 @@ export class UpdateCartModal extends React.Component <any, any> {
         });
     }
 
-    removeCart() {
-        this.props.removeCart(this.props.columnId, this.props.cartInfo.id)
+    removeCard() {
+        this.props.removeCard(this.props.columnId, this.props.cardInfo.id)
     }
 
     isFormsValid() {
@@ -103,11 +103,11 @@ export class UpdateCartModal extends React.Component <any, any> {
     submitResult() {
         const isValid = this.isFormsValid();
         if (isValid) {
-            this.props.submitCartInfo({
+            this.props.submitCardInfo({
                 color: this.state.color,
                 text: this.state.text,
                 title: this.state.title,
-                cartId: this.props.cartInfo ? this.props.cartInfo.id : null,
+                cardId: this.props.cardInfo ? this.props.cardInfo.id : null,
                 columnId: this.props.columnId,
                 type: this.state.type
             })
@@ -121,7 +121,7 @@ export class UpdateCartModal extends React.Component <any, any> {
     }
 
     render() {
-        let titlePlaceholder: string = "Enter title for the cart";
+        let titlePlaceholder: string = "Enter title for the card";
         let textPlaceholder: string = "Enter text message";
 
         const availibleColors: availibleColorsInterface = {
@@ -143,9 +143,9 @@ export class UpdateCartModal extends React.Component <any, any> {
                         style={{background: availibleColors[i]}}/>
         });
 
-        const removeButton = this.state.type === UPDATE_CART ? <div tabIndex={1}
+        const removeButton = this.state.type === UPDATE_CARD ? <div tabIndex={1}
                                                                     className="model__button button-form__red"
-                                                                    onClick={this.removeCart}>
+                                                                    onClick={this.removeCard}>
             Remove
         </div> : null;
 

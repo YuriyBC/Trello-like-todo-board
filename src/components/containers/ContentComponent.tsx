@@ -3,13 +3,13 @@ import ColumnComponent from '../ColumnComponent'
 import AddColumnButton from '../AddColumnButton'
 
 interface ContentComponentInterface {
-    columnDara: Array<{
+    columnData: Array<{
         id: number,
         title: string,
-        carts: Array<object>
+        cards: Array<object>
     }>,
-    openCartForEdit: () => void,
-    toggleCartEditor: () => void,
+    openCardForEdit: () => void,
+    toggleCardEditor: () => void,
     addColumn: () => void,
     columnTitleChange: any
     onChangeDrag: () => void,
@@ -53,13 +53,13 @@ export class ContentComponent extends React.Component <any, any> {
     render() {
         const columnData: any = this.props.columnData.map((column: {
             title: string,
-            carts: Array<object>,
+            cards: Array<object>,
             id: number
         }) => {
             return <ColumnComponent title={column.title}
-                                    openCartForEdit={this.props.openCartForEdit}
-                                    carts={column.carts}
-                                    toggleCartEditor={this.props.toggleCartEditor}
+                                    openCardForEdit={this.props.openCardForEdit}
+                                    cards={column.cards}
+                                    toggleCardEditor={this.props.toggleCardEditor}
                                     columnTitleChange={this.props.columnTitleChange}
                                     removeColumn={this.props.removeColumn}
                                     key={column.id}

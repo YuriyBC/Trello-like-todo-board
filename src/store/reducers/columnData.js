@@ -1,7 +1,7 @@
 const initialState = [{
     id: 0,
     title: 'Stuff To Try (this is a list)',
-    carts: []
+    cards: []
 }];
 
 const columnData = (state = initialState, action) => {
@@ -15,20 +15,20 @@ const columnData = (state = initialState, action) => {
             return setColumnData(state, action);
         case 'UPDATE_COLUMN_TITLE':
             return updateColumnTitle(state, action);
-        case 'ADD_CART':
-            return addCart(state, action);
-        case 'UPDATE_CART':
-            return updateCart(state, action);
-        case 'REMOVE_CART':
-            return removeCart(state, action);
+        case 'ADD_CARD':
+            return addCard(state, action);
+        case 'UPDATE_CARD':
+            return updateCard(state, action);
+        case 'REMOVE_CARD':
+            return removeCard(state, action);
         case 'REMOVE_COLUMN':
             return removeColumn(state, action);
-        case 'TRANSFER_DRAGGBLE_CART':
-            return transferDraggbleCart(state, action);
-        case 'NAVIGATE_CART':
-            return navigateCart(state, action);
-        case 'FILTER_CARTS':
-            return filterCarts(state, action);
+        case 'TRANSFER_DRAGGBLE_CARD':
+            return transferDraggbleCard(state, action);
+        case 'NAVIGATE_CARD':
+            return navigateCard(state, action);
+        case 'FILTER_CARDS':
+            return filterCards(state, action);
         default:
             return state;
     }
@@ -49,24 +49,24 @@ function setColumnData(state, action) {
     return columnData
 }
 
-function addCart(state, action) {
+function addCard(state, action) {
     const currentState = [...state];
     currentState.map((el) => {
         if (el.id === action.columnId) {
-            el.carts.push(action.cart);
+            el.cards.push(action.card);
         }
         return el
     });
     return currentState;
 }
 
-function updateCart(state, action) {
+function updateCard(state, action) {
     const currentState = [...state];
-    const {columnId, cartId, color, title, text} = action.payload;
+    const {columnId, cardId, color, title, text} = action.payload;
     currentState.map((el) => {
         if (el.id === columnId) {
-            el.carts.map((el) => {
-                if (el.id === cartId) {
+            el.cards.map((el) => {
+                if (el.id === cardId) {
                     el.color = color;
                     el.title = title;
                     el.text = text;
@@ -79,15 +79,15 @@ function updateCart(state, action) {
     return currentState;
 }
 
-function removeCart(state, action) {
-    const {columnId, cartId} = action.payload;
+function removeCard(state, action) {
+    const {columnId, cardId} = action.payload;
     let currentState = [...state];
-    let updatedCartList = currentState.find((el) => el.id === columnId).carts.filter((cart) => {
-        return cart.id !== cartId
+    let updatedCardList = currentState.find((el) => el.id === columnId).cards.filter((card) => {
+        return card.id !== cardId
     });
     currentState.forEach((el) => {
         if (el.id === columnId) {
-            el.carts = updatedCartList
+            el.cards = updatedCardList
         }
     });
     return currentState
@@ -101,35 +101,35 @@ function removeColumn(state, action) {
     return currentState
 }
 
-function transferDraggbleCart(state, action) {
+function transferDraggbleCard(state, action) {
     const {input, output, memorizeCb} = action.payload;
     let valueToReturn = state;
 
     if (input.columnId !== output.columnId) {
         let initialState = [...state];
-        let draggedCart = [...state].find((el) => el.id === input.columnId).carts.find((el) => el.id === input.cartId);
+        let draggedCard = [...state].find((el) => el.id === input.columnId).cards.find((el) => el.id === input.cardId);
 
         initialState.forEach((el) => {
             if (el.id === output.columnId) {
-                draggedCart.columnId = output.columnId;
-                el.carts.splice(output.cartIndex, 0, draggedCart)
+                draggedCard.columnId = output.columnId;
+                el.cards.splice(output.cardIndex, 0, draggedCard)
             }
 
             if (el.id === input.columnId) {
-                el.carts.splice(output.cartOldIndex, 1)
+                el.cards.splice(output.cardOldIndex, 1)
             }
         });
         valueToReturn = initialState;
         memorizeCb();
     }
 
-    if (input.columnId === output.columnId && output.cartIndex !== output.cartOldIndex) {
+    if (input.columnId === output.columnId && output.cardIndex !== output.cardOldIndex) {
         let initialState = [...state];
 
         initialState.forEach((el) => {
             if (el.id === input.columnId) {
-                const elToReplace = el.carts.splice(output.cartOldIndex, 1);
-                el.carts.splice(output.cartIndex, 0, elToReplace[0]);
+                const elToReplace = el.cards.splice(output.cardOldIndex, 1);
+                el.cards.splice(output.cardIndex, 0, elToReplace[0]);
             }
         });
         valueToReturn = initialState;
@@ -140,8 +140,8 @@ function transferDraggbleCart(state, action) {
 }
 
 
-function navigateCart(state, action) {
-    const {ev, columnId, cartIndex, target, memorizeCb} = action.payload;
+function navigateCard(state, action) {
+    const {ev, columnId, cardIndex, target, memorizeCb} = action.payload;
 
     const usedKeys = {
         arrowTop: 'ArrowUp',
@@ -157,16 +157,16 @@ function navigateCart(state, action) {
         const step = verticalDirection === usedKeys.arrowTop ? -1 : 1;
         const nextEl = verticalDirection === usedKeys.arrowTop ? target.previousSibling : target.nextSibling
 
-        let _maxIndex = currentState[columnId].carts.length - 1,
+        let _maxIndex = currentState[columnId].cards.length - 1,
             _minIndex = 0;
 
 
-        const indexToReach = cartIndex + step;
+        const indexToReach = cardIndex + step;
         if (_minIndex <= indexToReach && indexToReach <= _maxIndex) {
-            let carts = currentState[columnId].carts;
+            let cards = currentState[columnId].cards;
 
-            const replacedItem = carts.splice(indexToReach, 1, carts[cartIndex]);
-            carts.splice(cartIndex, 1, replacedItem[0]);
+            const replacedItem = cards.splice(indexToReach, 1, cards[cardIndex]);
+            cards.splice(cardIndex, 1, replacedItem[0]);
 
             if (nextEl) nextEl.focus();
 
@@ -186,14 +186,14 @@ function navigateCart(state, action) {
 
         const columnToReach = columnId + step;
         if (_minIndex <= columnToReach && columnToReach <= _maxIndex) {
-            let carts = currentState[columnId].carts;
-            const movedCart = carts.splice(cartIndex, 1)[0];
+            let cards = currentState[columnId].cards;
+            const movedCard = cards.splice(cardIndex, 1)[0];
 
-            let movedCartIndex = currentState[columnToReach].carts.length > cartIndex ? cartIndex : currentState[columnToReach].carts.length;
-            currentState[columnToReach].carts.splice(movedCartIndex, 0, movedCart);
+            let movedCardIndex = currentState[columnToReach].cards.length > cardIndex ? cardIndex : currentState[columnToReach].cards.length;
+            currentState[columnToReach].cards.splice(movedCardIndex, 0, movedCard);
 
             setTimeout(() => {
-                const el = nextColumn.getElementsByClassName('column-cart')[movedCartIndex];
+                const el = nextColumn.getElementsByClassName('column-card')[movedCardIndex];
                 if (el) el.focus();
                 memorizeCb()
             });
@@ -203,7 +203,7 @@ function navigateCart(state, action) {
     return state
 }
 
-function filterCarts(state, action) {
+function filterCards(state, action) {
     let {ev, history} = action.payload;
     const valueToFind = ev.target.value.trim();
     let valueToReturn = state;
@@ -214,11 +214,11 @@ function filterCarts(state, action) {
 
     if (valueToFind && valueToFind.length > 1) {
         let resultState = currentState.filter((el) => {
-            el.carts = el.carts.filter((el) => {
+            el.cards = el.cards.filter((el) => {
                 let elString = el.title + ' ' + el.text;
                 return elString.toLowerCase().indexOf(valueToFind.toLowerCase()) !== -1;
             });
-            return el.carts.length
+            return el.cards.length
         });
         valueToReturn = resultState
     } else {

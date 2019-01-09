@@ -4,7 +4,7 @@
     "sourceMap": true,
     "noImplicitAny": false,
     "noImplicitThis": true,
-    "module": "esnext",
+    "isolatedModules": true,
     "target": "es5",
     "jsx": "preserve",
     "lib": [
@@ -13,7 +13,7 @@
       "esnext"
     ],
     "allowJs": true,
-    "skipLibCheck": true,
+    "skipLibCheck": false,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "strict": true,
@@ -22,7 +22,7 @@
     "resolveJsonModule": true,
     "noEmit": true,
     "suppressImplicitAnyIndexErrors": true,
-    "isolatedModules": true
+    "module": "esnext"
   },
   "typeRoots": [
     "../node_modules/@types",

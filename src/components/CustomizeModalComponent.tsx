@@ -10,7 +10,7 @@ import {
     BLUE_COLOR
 } from '../utils/constants.js'
 
-interface availibleColorsInterface {
+interface AvailibleColorsInterface {
     green: string;
     yellow: string;
     red: string;
@@ -23,6 +23,14 @@ interface availibleColorsInterface {
 interface HTMLInputEvent extends React.SyntheticEvent {
     target: HTMLInputElement & EventTarget;
 }
+
+const availibleColors: AvailibleColorsInterface = {
+    green: GREEN_COLOR,
+    yellow: YELLOW_COLOR,
+    red: ORANGE_COLOR,
+    orange: RED_COLOR,
+    blue: BLUE_COLOR
+};
 
 export class CustomizeModalComponent extends React.Component <any, any> {
     constructor(props: {
@@ -84,22 +92,13 @@ export class CustomizeModalComponent extends React.Component <any, any> {
     }
 
     render() {
-        const availibleColors: availibleColorsInterface = {
-            green: GREEN_COLOR,
-            yellow: YELLOW_COLOR,
-            red: ORANGE_COLOR,
-            orange: RED_COLOR,
-            blue: BLUE_COLOR
-        };
-
-        let self = this;
         const colorList = Object.keys(availibleColors).map((i: any, index: number) => {
-            let colorClassName = self.state.color && self.state.color.toUpperCase() === availibleColors[i] ? "color-example active" : "color-example diactive"
-            if (!self.state.color) colorClassName = "color-example";
+            let colorClassName = this.state.color && this.state.color.toUpperCase() === availibleColors[i] ? "color-example active" : "color-example diactive"
+            if (!this.state.color) colorClassName = "color-example";
 
             return <div key={index}
                         className={colorClassName}
-                        onClick={() => self.setColor(availibleColors[i])}
+                        onClick={() => this.setColor(availibleColors[i])}
                         style={{background: availibleColors[i]}}/>
         });
 

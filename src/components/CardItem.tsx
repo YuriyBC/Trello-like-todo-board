@@ -1,30 +1,30 @@
 import * as React from "react";
 import imgEdit from '../img/ic-edit.png';
-import '../styles/CartComponent.scss';
+import '../styles/CardComponent.scss';
 import {trimString} from '../utils/methods';
 
-interface CartComponentProps {
+interface CardComponentProps {
     title: string,
     text: string,
-    openCartForEdit: any,
+    openCardForEdit: any,
     color: string,
     id: number,
     columnId: number
 }
 
-const CartComponent = (props: CartComponentProps) => {
+const CardComponent = (props: CardComponentProps) => {
     const style = props.color ? {"backgroundColor": props.color} : {};
 
-    return <div className="column-cart"
+    return <div className="column-card"
                 tabIndex={0}
                 data-column={props.columnId}
                 data-id={props.id}
                 onKeyDown={(ev) => {
-                    ev.key === 'Enter' && props.openCartForEdit()
+                    ev.key === 'Enter' && props.openCardForEdit()
                 }}
                 style={style}>
-        <img className="column-cart__icon"
-             onClick={props.openCartForEdit}
+        <img className="column-card__icon"
+             onClick={props.openCardForEdit}
              src={imgEdit}
              alt=""/>
         <span>{props.title}</span>
@@ -32,4 +32,4 @@ const CartComponent = (props: CartComponentProps) => {
     </div>
 };
 
-export default CartComponent
+export default CardComponent

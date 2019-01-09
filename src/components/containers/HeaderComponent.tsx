@@ -34,7 +34,7 @@ export class HeaderComponent extends React.Component <any, any> {
 
         return <div className="header">
             <div className="header-search">
-                <input onChange={this.props.filterCarts} type="text"/>
+                <input onChange={this.props.filterCards} type="text"/>
             </div>
             <div className="header-inner">
                 <a href="/">

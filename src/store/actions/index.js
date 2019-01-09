@@ -18,34 +18,34 @@ export const removeColumn = (payload) => ({
     payload
 });
 
-export const addCart = (payload) => ({
-    type: 'ADD_CART',
+export const addCard = (payload) => ({
+    type: 'ADD_CARD',
     columnId: payload.columnId,
-    cart: payload.cart
+    card: payload.card
 });
 
-export const updateCart = (payload) => ({
-    type: 'UPDATE_CART',
+export const updateCard = (payload) => ({
+    type: 'UPDATE_CARD',
     payload
 });
 
-export const removeCart = (payload) => ({
-    type: 'REMOVE_CART',
+export const removeCard = (payload) => ({
+    type: 'REMOVE_CARD',
     payload
 });
 
-export const transferDraggbleCart = (payload) => ({
-    type: 'TRANSFER_DRAGGBLE_CART',
+export const transferDraggbleCard = (payload) => ({
+    type: 'TRANSFER_DRAGGBLE_CARD',
     payload
 });
 
-export const navigateCart = (payload) => ({
-    type: 'NAVIGATE_CART',
+export const navigateCard = (payload) => ({
+    type: 'NAVIGATE_CARD',
     payload
 });
 
-export const filterCarts = (payload) => ({
-    type: 'FILTER_CARTS',
+export const filterCards = (payload) => ({
+    type: 'FILTER_CARDS',
     payload
 });
 

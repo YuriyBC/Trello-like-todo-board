@@ -3,25 +3,25 @@ import { connect } from 'react-redux'
 import './styles/App.scss';
 import {HeaderComponent} from "./components/containers/HeaderComponent";
 import {ContentComponent} from "./components/containers/ContentComponent";
-import {UpdateCartModal} from './components/UpdateCartModal'
+import {UpdateCardModal} from './components/UpdateCardModal'
 import {CustomizeModalComponent} from './components/CustomizeModalComponent'
 
 import {
     addColumn,
     updateColumnTitle,
-    addCart,
-    updateCart,
-    removeCart,
+    addCard,
+    updateCard,
+    removeCard,
     removeColumn,
-    transferDraggbleCart,
-    navigateCart,
+    transferDraggbleCard,
+    navigateCard,
     setColumnData,
-    filterCarts
+    filterCards
 } from './store/actions'
 
 import {
     ColumnModel,
-    CartModel
+    CardModel
 } from './utils/models'
 
 import {
@@ -33,9 +33,9 @@ import {
 } from './utils/methods'
 
 import {
-    UPDATE_CART,
-    ADD_NEW_CART,
-    CART_MODAL_WINDOW,
+    UPDATE_CARD,
+    ADD_NEW_CARD,
+    CARD_MODAL_WINDOW,
     CUSTOMIZE_MODAL_WINDOW,
     STORAGE_HISTORY,
     STORAGE_GLOBAL_STORE,
@@ -43,10 +43,10 @@ import {
 } from './utils/constants.js'
 
 interface stateInterface {
-    modalCart: {
+    modalCard: {
         isOpened: boolean,
         columnId?: number,
-        cartInfo?: object
+        cardInfo?: object
     },
     modalCustomize: {
         isOpened: boolean
@@ -59,10 +59,10 @@ interface stateInterface {
 }
 
 const initialState = {
-    modalCart: {
+    modalCard: {
         isOpened: false,
         columnId: null,
-        cartInfo: null
+        cardInfo: null
     },
     modalCustomize: {
         isOpened: false
@@ -78,13 +78,13 @@ class App extends Component <stateInterface, any> {
         super(props);
         this.state = initialState;
 
-        // cartChanges
-        this.openCartForEdit = this.openCartForEdit.bind(this);
-        this.toggleCartEditor = this.toggleCartEditor.bind(this);
-        this.submitCartInfo = this.submitCartInfo.bind(this);
-        this.removeCart = this.removeCart.bind(this);
+        // cardChanges
+        this.openCardForEdit = this.openCardForEdit.bind(this);
+        this.toggleCardEditor = this.toggleCardEditor.bind(this);
+        this.submitCardInfo = this.submitCardInfo.bind(this);
+        this.removeCard = this.removeCard.bind(this);
         this.onChangeDrag = this.onChangeDrag.bind(this);
-        this.filterCarts = this.filterCarts.bind(this);
+        this.filterCards = this.filterCards.bind(this);
 
         // columnChanges
         this.addColumn = this.addColumn.bind(this);
@@ -147,19 +147,19 @@ class App extends Component <stateInterface, any> {
         if (!storage(STORAGE_HISTORY)) {
             storage(STORAGE_HISTORY, JSON.stringify([]))
         }
-
+        //
         let storageData: any = storage(STORAGE_GLOBAL_STORE);
         let storageHistory: any = storage(STORAGE_HISTORY);
-
+        //
         if (storageData) {
             storageData = JSON.parse(storageData);
             storageData.columnData && this.props.dispatch(setColumnData({
                 columnData: storageData.columnData
             }));
-            delete storageData.columnData
-            this.setState(storageData);
+            delete storageData.columnData;
+            this.setState(storageData)
         }
-
+        //
         if (storageHistory) {
             storageHistory = JSON.parse(storageHistory);
             this.setState({historyStep: storageHistory.length - 1});
@@ -192,26 +192,26 @@ class App extends Component <stateInterface, any> {
         setTimeout(this.memorizeChangesInHistory.bind(this))
     }
 
-    toggleCartEditor(columnId: number) {
+    toggleCardEditor(columnId: number) {
         this.setState({
-            modalCart: {
+            modalCard: {
                 columnId: columnId,
-                isOpened: !this.state.modalCart.isOpened
+                isOpened: !this.state.modalCard.isOpened
             }
         });
     }
 
     closeModal(type: string) {
         let stateField;
-        if (type === CART_MODAL_WINDOW) {
-            stateField = 'modalCart'
+        if (type === CARD_MODAL_WINDOW) {
+            stateField = 'modalCard'
         } else if (type === CUSTOMIZE_MODAL_WINDOW) {
             stateField = 'modalCustomize'
         } else if (type === ALL_MODALS) {
             this.setState({
-                modalCart: {
+                modalCard: {
                     isOpened: false,
-                    cartInfo: null
+                    cardInfo: null
                 },
                 modalCustomize: {
                     isOpened: false
@@ -222,17 +222,17 @@ class App extends Component <stateInterface, any> {
         this.setState({
             [stateField]: {
                 isOpened: !this.state[stateField].isOpened,
-                cartInfo: null
+                cardInfo: null
             }
         });
     }
 
-    removeCart(columnId: number, cartId: number) {
-        this.props.dispatch(removeCart({
+    removeCard(columnId: number, cardId: number) {
+        this.props.dispatch(removeCard({
             columnId,
-            cartId
+            cardId
         }));
-        this.closeModal(CART_MODAL_WINDOW);
+        this.closeModal(CARD_MODAL_WINDOW);
         setTimeout(this.memorizeChangesInHistory.bind(this));
     }
 
@@ -241,58 +241,58 @@ class App extends Component <stateInterface, any> {
         setTimeout(this.memorizeChangesInHistory.bind(this));
     }
 
-    openCartForEdit(columnId: number, cartId: number) {
-        const cartToEdit = this.props.columnData.find((el: any) => {
+    openCardForEdit(columnId: number, cardId: number) {
+        const cardToEdit = this.props.columnData.find((el: any) => {
             return el.id === columnId
-        }).carts.find((el: any) => {
-            return el.id === cartId
+        }).cards.find((el: any) => {
+            return el.id === cardId
         });
         this.setState({
-            modalCart: {
+            modalCard: {
                 columnId,
-                cartInfo: cartToEdit,
-                isOpened: !this.state.modalCart.isOpened
+                cardInfo: cardToEdit,
+                isOpened: !this.state.modalCard.isOpened
             }
         });
     }
 
-    submitCartInfo(val: {
+    submitCardInfo(val: {
         text: string,
         color: string,
         title: string,
-        cartId?: number,
+        cardId?: number,
         columnId?: number,
         type: string
     }) {
-        if (val.type === UPDATE_CART) {
-            const {columnId, cartId, color, title, text} = val;
-            this.props.dispatch(updateCart({
+        if (val.type === UPDATE_CARD) {
+            const {columnId, cardId, color, title, text} = val;
+            this.props.dispatch(updateCard({
                 columnId,
-                cartId,
+                cardId,
                 color,
                 title,
                 text
             }));
-            this.closeModal(CART_MODAL_WINDOW);
+            this.closeModal(CARD_MODAL_WINDOW);
             setTimeout(this.memorizeChangesInHistory.bind(this))
-        } else if (val.type === ADD_NEW_CART) {
-            addNewCart.call(this)
+        } else if (val.type === ADD_NEW_CARD) {
+            addNewCard.call(this)
         }
 
-        function addNewCart(this: any) {
+        function addNewCard(this: any) {
             const id = generateRandomId()
-            const newCart: any = new CartModel({
+            const newCard: any = new CardModel({
                 color: val.color,
                 text: val.text,
                 title: val.title,
                 columnId: val.columnId,
                 id
             });
-            this.props.dispatch(addCart({
+            this.props.dispatch(addCard({
                 columnId: val.columnId,
-                cart: newCart
+                card: newCard
             }));
-            this.closeModal(CART_MODAL_WINDOW);
+            this.closeModal(CARD_MODAL_WINDOW);
             setTimeout(this.memorizeChangesInHistory.bind(this))
         }
     }
@@ -307,14 +307,14 @@ class App extends Component <stateInterface, any> {
 
     onChangeDrag(input: {
         columnId: number,
-        cartId: number
+        cardId: number
     }, output: {
         columnId: number,
-        cartIndex: number,
-        cartOldIndex: number
+        cardIndex: number,
+        cardOldIndex: number
     }) {
         const memorizeCb = this.memorizeChangesInHistory.bind(this);
-        this.props.dispatch(transferDraggbleCart({
+        this.props.dispatch(transferDraggbleCard({
             input,
             output,
             memorizeCb
@@ -351,31 +351,31 @@ class App extends Component <stateInterface, any> {
         }
 
         if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].indexOf(ev.key) >= 0 && document.activeElement) {
-            let allCarts = Array.from(document.getElementsByClassName('column-cart'));
-            let focusedEl: any = allCarts.filter(el => el === document.activeElement)[0];
+            let allCards = Array.from(document.getElementsByClassName('column-card'));
+            let focusedEl: any = allCards.filter(el => el === document.activeElement)[0];
             if (focusedEl) {
                 let focusedColumn = Array.from(document.getElementsByClassName('column')).filter(el => el.contains(focusedEl))[0];
-                let columnCarts = Array.from(focusedColumn.getElementsByClassName('column-cart'));
+                let columnCards = Array.from(focusedColumn.getElementsByClassName('column-card'));
 
                 const THROTTLE_TIME = 200;
                 const memorizeCb = this.memorizeChangesInHistory.bind(this);
 
                 throttle(() => {
-                    this.props.dispatch(navigateCart({
+                    this.props.dispatch(navigateCard({
                         ev,
                         columnId: +focusedEl.dataset.column,
                         target: focusedEl,
-                        cartIndex: columnCarts.indexOf(focusedEl),
+                        cardIndex: columnCards.indexOf(focusedEl),
                         memorizeCb}))
                 }, THROTTLE_TIME)
             }
         }
     }
 
-    filterCarts(ev: any) {
+    filterCards(ev: any) {
         let history = storage(STORAGE_HISTORY);
 
-        this.props.dispatch(filterCarts({
+        this.props.dispatch(filterCards({
             history,
             ev
         }))
@@ -391,12 +391,12 @@ class App extends Component <stateInterface, any> {
 
 
     render(): React.ReactNode {
-        const modalCart = this.state.modalCart.isOpened ?
-            <UpdateCartModal columnId={this.state.modalCart.columnId}
-                             cartInfo={this.state.modalCart.cartInfo}
-                             closeModal={() => this.closeModal(CART_MODAL_WINDOW)}
-                             removeCart={this.removeCart}
-                             submitCartInfo={this.submitCartInfo}/> :
+        const modalCard = this.state.modalCard.isOpened ?
+            <UpdateCardModal columnId={this.state.modalCard.columnId}
+                             cardInfo={this.state.modalCard.cardInfo}
+                             closeModal={() => this.closeModal(CARD_MODAL_WINDOW)}
+                             removeCard={this.removeCard}
+                             submitCardInfo={this.submitCardInfo}/> :
             null;
 
         const modalCustomize = this.state.modalCustomize.isOpened ?
@@ -419,17 +419,17 @@ class App extends Component <stateInterface, any> {
                  style={appStyles}>
                 <HeaderComponent setStateFromHistory={this.setStateFromHistory}
                                  historyStep={this.state.historyStep}
-                                 filterCarts={this.filterCarts}
+                                 filterCards={this.filterCards}
                                  showCustomizeModal={this.showCustomizeModal}/>
                 <ContentComponent columnTitleChange={this.columnTitleChange}
                                   columnData={this.props.columnData}
                                   addColumn={this.addColumn}
-                                  toggleCartEditor={this.toggleCartEditor}
-                                  openCartForEdit={this.openCartForEdit}
+                                  toggleCardEditor={this.toggleCardEditor}
+                                  openCardForEdit={this.openCardForEdit}
                                   isAddColumnButtonEditable={this.state.isAddColumnButtonEditable}
                                   onChangeDrag={this.onChangeDrag}
                                   removeColumn={this.removeColumn}/>
-                {modalCart}
+                {modalCard}
                 {modalCustomize}
             </div>
         );

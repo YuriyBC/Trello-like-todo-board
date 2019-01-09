@@ -1,4 +1,4 @@
-.column-cart {
+.column-card {
   position: relative;
   background-color: #fff;
   border-radius: 3px;
@@ -48,7 +48,7 @@
     font-weight: bold;
   }
   &:hover, &:focus {
-    .column-cart__icon {
+    .column-card__icon {
       display: block;
     }
   }
