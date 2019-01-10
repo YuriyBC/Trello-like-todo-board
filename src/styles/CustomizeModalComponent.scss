@@ -63,7 +63,7 @@
       position: absolute;
       z-index: -1;
     }
-    label[for="ImageForm"] {
+    label[for="inputFile"] {
       background: white;
       box-shadow: none;
       border: 1px solid #516b7a;
@@ -81,24 +81,6 @@
       }
     }
   }
-
-  //::-webkit-file-upload-button {
-  //  background: white;
-  //  box-shadow: none;
-  //  border: 1px solid #516b7a;
-  //  border-radius: 5px;
-  //  padding: 7px 15px;
-  //  cursor: pointer;
-  //  color: #516b7a;
-  //  transition: 0.2s;
-  //  outline: none;
-  //  &:hover {
-  //    opacity: 0.8;
-  //  }
-  //  &:active {
-  //    opacity: 0.3;
-  //  }
-  //}
   .color-example {
     position: relative;
     width: 50%;

@@ -1,15 +1,20 @@
 import * as React from "react";
 import '../../styles/HeaderComponent.scss'
 import icDir from '../../img/ic-dir.png'
+import { storage } from '../../utils/methods'
 
-interface HeaderComponentProps {
+import {
+    STORAGE_HISTORY
+} from '../../utils/constants.js'
+
+interface IHeaderComponentProps {
     showCustomizeModal: () => void,
     historyStep: number,
     setStateFromHistory: () => void
 }
 
 export class HeaderComponent extends React.Component <any, any> {
-    constructor(props: HeaderComponentProps) {
+    constructor(props: IHeaderComponentProps) {
         super(props);
         this.state = {
             isDropDownHidden: false
@@ -26,7 +31,7 @@ export class HeaderComponent extends React.Component <any, any> {
     }
 
     getClassIcon (type: string) {
-        let storageHistory: any = localStorage.getItem('history');
+        let storageHistory: any = storage(STORAGE_HISTORY);
         storageHistory = JSON.parse(storageHistory);
         const isPrevIconActive = this.props.historyStep > 0;
         const isNextIconActive = storageHistory && this.props.historyStep < storageHistory.length - 1;
@@ -55,7 +60,6 @@ export class HeaderComponent extends React.Component <any, any> {
                 break;
         }
     }
-
 
     render() {
         const prevIconClass = this.getClassIcon('prev');

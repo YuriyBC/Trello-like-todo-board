@@ -12,7 +12,7 @@ import {
 } from '../utils/constants.js'
 
 
-interface availibleColorsInterface {
+interface IAvailableColors {
     green: string;
     yellow: string;
     red: string;
@@ -22,7 +22,7 @@ interface availibleColorsInterface {
     [propName: string]: string | number | undefined;
 }
 
-interface UpdateCardModalInterface {
+interface IUpdateCardModal {
     submitCardInfo: () => void;
     columnId?: number,
     closeModal: () => void,
@@ -35,22 +35,47 @@ interface UpdateCardModalInterface {
     }
 }
 
+let titlePlaceholder: string = "Enter title for the card";
+let textPlaceholder: string = "Enter text message";
+
+const availableColors: IAvailableColors = {
+    green: GREEN_COLOR,
+    yellow: YELLOW_COLOR,
+    red: ORANGE_COLOR,
+    orange: RED_COLOR,
+    blue: BLUE_COLOR
+};
+
 export class UpdateCardModal extends React.Component <any, any> {
-    constructor(props: UpdateCardModalInterface) {
+    constructor(props: IUpdateCardModal) {
         super(props);
         this.state = {
             color: '',
             title: '',
             text: '',
             modalRef: React.createRef(),
-            type: this.props.cardInfo ? UPDATE_CARD : ADD_NEW_CARD
+            type: this.props.cardInfo ? UPDATE_CARD : ADD_NEW_CARD,
+            elements: {
+                titleForm: {
+                    ref: React.createRef(),
+                    isValid: true
+                },
+                messageForm: {
+                    ref: React.createRef(),
+                    isValid: true
+                }
+            }
         };
         this.setForm = this.setForm.bind(this);
         this.setColor = this.setColor.bind(this);
         this.submitResult = this.submitResult.bind(this);
         this.removeCard = this.removeCard.bind(this);
         this.isFormsValid = this.isFormsValid.bind(this);
-        this.modalClickHandler = this.modalClickHandler.bind(this)
+        this.modalClickHandler = this.modalClickHandler.bind(this);
+        this.setFormValidationStyle = this.setFormValidationStyle.bind(this);
+        this.getFormStyle = this.getFormStyle.bind(this);
+        this.getColorList = this.getColorList.bind(this);
+        this.getRemoveButton = this.getRemoveButton.bind(this);
     }
 
     componentDidMount() {
@@ -81,18 +106,20 @@ export class UpdateCardModal extends React.Component <any, any> {
         this.props.removeCard(this.props.columnId, this.props.cardInfo.id)
     }
 
-    isFormsValid() {
-        const modalEl = this.state.modalRef.current;
-        const classList: any = modalEl.getElementsByClassName('form');
-        let elms: any = Array.from(classList);
-        const TIME_STYLES_APPLY = 1000;
+    setFormValidationStyle (element: any, isError: boolean) {
+        const state = {...this.state};
+        this.state.elements[element.id].isValid = isError;
+        this.setState(state)
+    }
 
-        return elms.every((el) => {
-            if (el.required && !el.value.trim()) {
-                el.style.border = '1px solid red';
-                setTimeout(() => {
-                    el.style.border = 'none'
-                }, TIME_STYLES_APPLY);
+    isFormsValid() {
+        const TIME_STYLES_APPLY = 1000;
+        const formElements = [this.state.elements.titleForm.ref.current, this.state.elements.messageForm.ref.current];
+
+        return formElements.every((element) => {
+            if (element.required && !element.value.trim()) {
+                this.setFormValidationStyle(element, true);
+                setTimeout(() => {this.setFormValidationStyle(element, false)}, TIME_STYLES_APPLY);
                 return false
             } else {
                 return true
@@ -120,34 +147,33 @@ export class UpdateCardModal extends React.Component <any, any> {
         }
     }
 
-    render() {
-        let titlePlaceholder: string = "Enter title for the card";
-        let textPlaceholder: string = "Enter text message";
+    getFormStyle (type: string) {
+        return this.state.elements[type].isValid ? {"border" : "none"} : {"border": `1px solid ${RED_COLOR}`};
+    }
 
-        const availibleColors: availibleColorsInterface = {
-            green: GREEN_COLOR,
-            yellow: YELLOW_COLOR,
-            red: ORANGE_COLOR,
-            orange: RED_COLOR,
-            blue: BLUE_COLOR
-        };
-
-        let x = this;
-        const colorList = Object.keys(availibleColors).map((i: any, index: number) => {
-            let colorClassName = x.state.color === availibleColors[i] ? "color-example active" : "color-example diactive"
-            if (!x.state.color) colorClassName = "color-example";
+    getColorList () {
+        return Object.keys(availableColors).map((i: any, index: number) => {
+            let colorClassName = this.state.color === availableColors[i] ? "color-example active" : "color-example diactive"
+            if (!this.state.color) colorClassName = "color-example";
 
             return <div key={index}
                         className={colorClassName}
-                        onClick={() => x.setColor(availibleColors[i])}
-                        style={{background: availibleColors[i]}}/>
+                        onClick={() => this.setColor(availableColors[i])}
+                        style={{background: availableColors[i]}}/>
         });
 
-        const removeButton = this.state.type === UPDATE_CARD ? <div tabIndex={1}
-                                                                    className="model__button button-form__red"
-                                                                    onClick={this.removeCard}>
+    }
+
+    getRemoveButton () {
+        return this.state.type === UPDATE_CARD ? <div tabIndex={1}
+                                                      className="model__button button-form__red"
+                                                      onClick={this.removeCard}>
             Remove
         </div> : null;
+    }
+
+    render() {
+
 
         return <div className="modal"
                     onClick={this.modalClickHandler}
@@ -160,30 +186,36 @@ export class UpdateCardModal extends React.Component <any, any> {
                          alt=""/>
                     <div className="modal-field">
                         <p>Title</p>
-                        <input placeholder={titlePlaceholder}
-                               value={this.state.title}
-                               onChange={($ev) => this.setForm($ev, 'title')}
-                               required
+                        <input type="text"
                                className="form"
-                               type="text"/>
+                               id="titleForm"
+                               style={this.getFormStyle("titleForm")}
+                               value={this.state.title}
+                               placeholder={titlePlaceholder}
+                               required
+                               ref={this.state.elements.titleForm.ref}
+                               onChange={($ev) => this.setForm($ev, 'title')}/>
                     </div>
 
                     <div className="modal-field">
                         <p>Text message</p>
-                        <textarea onChange={($ev) => this.setForm($ev, 'text')}
+                        <textarea className="form"
+                                  id="messageForm"
+                                  style={this.getFormStyle("messageForm")}
                                   value={this.state.text}
-                                  className="form"
-                                  placeholder={textPlaceholder}/>
+                                  ref={this.state.elements.messageForm.ref}
+                                  placeholder={textPlaceholder}
+                                  onChange={($ev) => this.setForm($ev, 'text')}/>
                     </div>
 
                     <div className="modal-field">
                         <p>Choose a color</p>
-                        {colorList}
+                        {this.getColorList()}
                     </div>
 
                     <div className="model__container-footer">
                         <span>
-                          {removeButton}
+                          {this.getRemoveButton()}
                         </span>
                         <div tabIndex={1}
                              className="model__button button-form__green"

@@ -1,8 +1,8 @@
 import * as React from "react";
 import '../styles/ColumnComponent.scss'
-import CardList from './CardList'
+import {CardList} from './CardList'
 
-interface ColumnComponentProps {
+interface IColumnComponentProps {
     title: string,
     id: number,
     cards: Array<object>,
@@ -14,7 +14,7 @@ interface ColumnComponentProps {
 }
 
 export default class ColumnComponent extends React.Component <any, any> {
-    constructor(props: ColumnComponentProps) {
+    constructor(props: IColumnComponentProps) {
         super(props);
         this.state = {
             isTitleEditMode: false,

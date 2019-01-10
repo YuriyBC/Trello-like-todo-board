@@ -10,7 +10,7 @@ import {
     BLUE_COLOR
 } from '../utils/constants.js'
 
-interface AvailibleColorsInterface {
+interface IAvailableColors {
     green: string;
     yellow: string;
     red: string;
@@ -20,11 +20,11 @@ interface AvailibleColorsInterface {
     [propName: string]: string | number | undefined;
 }
 
-interface HTMLInputEvent extends React.SyntheticEvent {
+interface IEventTarget extends React.SyntheticEvent {
     target: HTMLInputElement & EventTarget;
 }
 
-const availibleColors: AvailibleColorsInterface = {
+const availableColors: IAvailableColors = {
     green: GREEN_COLOR,
     yellow: YELLOW_COLOR,
     red: ORANGE_COLOR,
@@ -49,6 +49,8 @@ export class CustomizeModalComponent extends React.Component <any, any> {
         this.removeImage = this.removeImage.bind(this);
         this.modalClickHandler = this.modalClickHandler.bind(this);
         this.updateFilenameTitle = this.updateFilenameTitle.bind(this);
+        this.getColorList = this.getColorList.bind(this);
+        this.getDeleteImageButton = this.getDeleteImageButton.bind(this);
     }
 
     setColor(color: any) {
@@ -76,39 +78,42 @@ export class CustomizeModalComponent extends React.Component <any, any> {
         this.props.setBackgroundStyle(undefined, null);
     }
 
-    modalClickHandler(ev: React.SyntheticEvent) {
-        if (ev.target === this.state.modalRef.current) {
+    modalClickHandler(event: React.SyntheticEvent) {
+        if (event.target === this.state.modalRef.current) {
             this.props.closeModal()
         }
     }
 
-    updateFilenameTitle(ev: HTMLInputEvent) {
-        if (ev.target.files && ev.target.files.length) {
+    updateFilenameTitle(event: IEventTarget) {
+        if (event.target.files && event.target.files.length) {
             this.setState({
-                fileName: ev.target.files[0].name
+                fileName: event.target.files[0].name
             })
         }
 
     }
 
-    render() {
-        const colorList = Object.keys(availibleColors).map((i: any, index: number) => {
-            let colorClassName = this.state.color && this.state.color.toUpperCase() === availibleColors[i] ? "color-example active" : "color-example diactive"
+    getColorList () {
+        return Object.keys(availableColors).map((i: any, index: number) => {
+            let colorClassName = this.state.color && this.state.color.toUpperCase() === availableColors[i] ? "color-example active" : "color-example diactive"
             if (!this.state.color) colorClassName = "color-example";
 
             return <div key={index}
                         className={colorClassName}
-                        onClick={() => this.setColor(availibleColors[i])}
-                        style={{background: availibleColors[i]}}/>
+                        onClick={() => this.setColor(availableColors[i])}
+                        style={{background: availableColors[i]}}/>
         });
+    }
 
-
-        const deleteImageButton = this.props.backgroundImage ? <div
+    getDeleteImageButton () {
+        return this.props.backgroundImage ? <div
             className="model__button button-remove button-form__red"
             onClick={this.removeImage}>
             Delete Image
         </div> : null;
+    }
 
+    render() {
         return <div className="modal customize"
                     onClick={this.modalClickHandler}
                     ref={this.state.modalRef}>
@@ -120,26 +125,26 @@ export class CustomizeModalComponent extends React.Component <any, any> {
                          alt=""/>
                     <div className="modal-field">
                         <p>Pick color</p>
-                        {colorList}
+                        {this.getColorList()}
                     </div>
                     <br/>
                     <div className="modal-field">
                         <p>Upload image</p>
                         <div className="modal-field__uploader">
-                            <label htmlFor="ImageForm">Browse...</label>
+                            <label htmlFor="inputFile">Browse...</label>
                             <input accept="image/*"
                                    className="modal-form__file"
-                                   name="ImageForm"
+                                   name="inputFile"
                                    onChange={this.updateFilenameTitle}
                                    ref={this.state.fileInput}
-                                   id="ImageForm"
+                                   id="inputFile"
                                    type="file"/>
                             <span className="modal-field__fileName">{this.state.fileName}</span>
                         </div>
                     </div>
                     <div className="model__container-footer">
                         <span>
-                            {deleteImageButton}
+                            {this.getDeleteImageButton()}
                         </span>
                         <div className="model__button button-form__green"
                              onClick={this.submitResult}>

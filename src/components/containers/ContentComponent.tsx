@@ -1,8 +1,8 @@
 import * as React from 'react';
 import ColumnComponent from '../ColumnComponent'
-import AddColumnButton from '../AddColumnButton'
+import {AddColumnButton} from '../AddColumnButton'
 
-interface ContentComponentInterface {
+interface IContentComponent {
     columnData: Array<{
         id: number,
         title: string,
@@ -17,7 +17,7 @@ interface ContentComponentInterface {
 }
 
 export class ContentComponent extends React.Component <any, any> {
-    constructor(props: ContentComponentInterface) {
+    constructor(props: IContentComponent) {
         super(props);
         this.state = {
             isAddColumnButtonEditable: false,

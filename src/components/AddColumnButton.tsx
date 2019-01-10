@@ -2,74 +2,91 @@ import * as React from 'react';
 import imgAdd from '../img/ic-add.png'
 import imgClose from '../img/ic-close.png'
 
-interface AddColumnButtonProps {
-    toggleEditMode: any,
-    addColumn: any,
-    formRef: any,
+interface IAddColumnButtonProps {
+    toggleEditMode: (b?: boolean) => void,
+    addColumn: () => void,
+    formRef: React.RefObject<HTMLInputElement>,
     isAddColumnButtonEditable: boolean
 }
 
-let isRendered = false;
-export default function AddColumnButton(props: AddColumnButtonProps) {
-    const containerClass: string = 'columns-wrapper__add';
+interface IAddColumnButtonState {
+    containerRef: React.RefObject<HTMLInputElement>
+}
 
-    if (!isRendered) {
-        document.addEventListener('click', onClickedOutside, true);
-        isRendered = true
+export class AddColumnButton extends React.Component <any, IAddColumnButtonState> {
+    constructor (props: IAddColumnButtonProps) {
+        super(props);
+        this.state = {
+            containerRef: React.createRef()
+        };
+        this.onClickedOutside = this.onClickedOutside.bind(this);
+        this.columnNameKeypressHandler = this.columnNameKeypressHandler.bind(this);
+        this.getAddColumnButton = this.getAddColumnButton.bind(this);
+        this.getDefaultButton = this.getDefaultButton.bind(this);
     }
 
-    function onClickedOutside(ev: any) {
-        const ignoredContainer = document.getElementsByClassName(containerClass)[0];
+    componentDidMount(): void {
+        document.addEventListener('click', this.onClickedOutside, true);
+    }
+
+    onClickedOutside(ev: any) {
+        const ignoredContainer = this.state.containerRef.current;
         if (ignoredContainer && !ignoredContainer.contains(ev.target)) {
-            props.toggleEditMode(false);
+            this.props.toggleEditMode(false);
         }
-
     }
 
-    function columnNameKeypressHandler (ev) {
+    columnNameKeypressHandler (ev) {
         if (ev && ev.key === 'Enter') {
-            props.addColumn()
+            this.props.addColumn()
         }
     }
 
-    function getAddColumnButton() {
-        const isEditable: boolean = props.isAddColumnButtonEditable;
-        const defaultMode =
-            <div onClick={props.toggleEditMode}
-                 className="columns-wrapper__add__initial">
-                <img src={imgAdd} alt="add icon"/>
-                <span>Add another list</span>
-            </div>;
+    getDefaultButton () {
+        return <div onClick={() => this.props.toggleEditMode()}
+                     className="columns-wrapper__add__initial">
+                    <img src={imgAdd} alt="add icon"/>
+                    <span>Add another list</span>
+               </div>;
+    }
+
+    getEditableButton () {
+        return  <div className="columns-wrapper__add__edit">
+                    <div>
+                        <input type="text"
+                               ref={this.props.formRef}
+                               onKeyPress={this.columnNameKeypressHandler}
+                               placeholder="Enter list title..."/>
+                    </div>
+                    <div>
+                        <div className="columns-wrapper__add__edit-button button-form__green"
+                             onClick={this.props.addColumn}>
+                            Add list
+                        </div>
+                        <img className="icon"
+                             onClick={() => this.props.toggleEditMode()}
+                             src={imgClose} alt=""/>
+                    </div>
+                </div>;
+
+    }
+
+    getAddColumnButton() {
+        const isEditable: boolean = this.props.isAddColumnButtonEditable;
 
         if (isEditable) {
             setTimeout(() => {
-                props.formRef.current.focus()
+                if (this.props.formRef.current) this.props.formRef.current.focus()
             })
         }
 
-        const editableMode =
-            <div className="columns-wrapper__add__edit">
-                <div>
-                    <input type="text"
-                           ref={props.formRef}
-                           onKeyPress={columnNameKeypressHandler}
-                           placeholder="Enter list title..."/>
-                </div>
-                <div>
-                    <div className="columns-wrapper__add__edit-button button-form__green"
-                         onClick={props.addColumn}>
-                        Add list
-                    </div>
-                    <img className="icon"
-                         onClick={props.toggleEditMode}
-                         src={imgClose} alt=""/>
-                </div>
-            </div>;
-
-        return !isEditable ? defaultMode : editableMode;
+        return !isEditable ? this.getDefaultButton() : this.getEditableButton();
     }
 
-    return <div className={containerClass}>
-        {getAddColumnButton()}
+
+    render () {
+    return <div ref={this.state.containerRef} className="columns-wrapper__add">
+        {this.getAddColumnButton()}
     </div>
+    }
 }

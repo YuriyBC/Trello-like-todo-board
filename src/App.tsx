@@ -42,7 +42,7 @@ import {
     ALL_MODALS
 } from './utils/constants.js'
 
-interface stateInterface {
+interface IState {
     modalCard: {
         isOpened: boolean,
         columnId?: number,
@@ -73,7 +73,7 @@ const initialState = {
     isAddColumnButtonEditable: false
 };
 
-class App extends Component <stateInterface, any> {
+class App extends Component <IState, any> {
     constructor(props) {
         super(props);
         this.state = initialState;
@@ -115,11 +115,11 @@ class App extends Component <stateInterface, any> {
     }
 
     memorizeChangesInHistory(): void {
-        const max_availible_history_length = 25;
+        const max_available_history_length = 25;
         let history: any = storage(STORAGE_HISTORY),
             storageData = JSON.parse(history);
 
-        if (storageData.length <= max_availible_history_length) {
+        if (storageData.length <= max_available_history_length) {
             storageData.push({
                 columnData: this.props.columnData,
                 ...this.state

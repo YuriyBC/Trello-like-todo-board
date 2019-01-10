@@ -3,16 +3,16 @@ import imgEdit from '../img/ic-edit.png';
 import '../styles/CardComponent.scss';
 import {trimString} from '../utils/methods';
 
-interface CardComponentProps {
+interface ICardComponentProps {
     title: string,
     text: string,
-    openCardForEdit: any,
+    openCardForEdit: () => void,
     color: string,
     id: number,
     columnId: number
 }
 
-const CardComponent = (props: CardComponentProps) => {
+const CardComponent = (props: ICardComponentProps) => {
     const style = props.color ? {"backgroundColor": props.color} : {};
 
     return <div className="column-card"
