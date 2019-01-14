@@ -47,17 +47,11 @@ export class HeaderComponent extends React.Component <any, any> {
     }
 
     setStateFromHistory (type: string, currentClass: string) {
-        switch (type) {
-            case 'prev':
-                if (currentClass === 'active') {
-                    this.props.setStateFromHistory('prev')
-                }
-                break;
-            case 'next':
-                if (currentClass === 'active') {
-                    this.props.setStateFromHistory('next')
-                }
-                break;
+        if (type === 'prev' && currentClass === 'active') {
+          this.props.setStateFromHistory('prev');
+        }
+        if (type === 'next' && currentClass === 'active') {
+          this.props.setStateFromHistory('next');
         }
     }
 
