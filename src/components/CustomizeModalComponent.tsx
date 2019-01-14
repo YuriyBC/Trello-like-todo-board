@@ -1,4 +1,4 @@
-import * as React from 'react'
+import * as React from 'react';
 import ImgClose from '../img/ic-close.png'
 import '../styles/CustomizeModalComponent.scss'
 
@@ -8,7 +8,7 @@ import {
     ORANGE_COLOR,
     RED_COLOR,
     BLUE_COLOR
-} from '../utils/constants.js'
+} from '../utils/constants';
 
 interface IAvailableColors {
     green: string;
@@ -32,7 +32,16 @@ const availableColors: IAvailableColors = {
     blue: BLUE_COLOR
 };
 
-export class CustomizeModalComponent extends React.Component <any, any> {
+interface IState {
+   modalRef: any;
+   color: string;
+   fileInput: any;
+   fileName: string;
+}
+
+export class CustomizeModalComponent extends React.Component <any, IState> {
+    [x: string]: any;
+    state: IState;
     constructor(props: {
         backgroundColor: string,
         backgroundImage?: string
@@ -56,7 +65,7 @@ export class CustomizeModalComponent extends React.Component <any, any> {
     setColor(color: any) {
         this.setState({
             color
-        })
+        });
     }
 
     submitResult() {
@@ -95,7 +104,8 @@ export class CustomizeModalComponent extends React.Component <any, any> {
 
     getColorList () {
         return Object.keys(availableColors).map((i: any, index: number) => {
-            let colorClassName = this.state.color && this.state.color.toUpperCase() === availableColors[i] ? "color-example active" : "color-example diactive"
+            let colorClassName = this.state.color && this.state.color.toUpperCase() === availableColors[i]
+                ? "color-example active" : "color-example diactive";
             if (!this.state.color) colorClassName = "color-example";
 
             return <div key={index}

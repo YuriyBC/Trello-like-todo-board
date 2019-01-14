@@ -58,8 +58,8 @@ export default class ColumnComponent extends React.Component <any, any> {
         this.props.toggleCardEditor(columnId);
     }
 
-    toggleColumnDropdown(forseState?: boolean) {
-        this.setState({isDropDownOpened: typeof forseState !== 'undefined' ? forseState : !this.state.isDropDownOpened})
+    toggleColumnDropdown(forceState?: boolean) {
+        this.setState({isDropDownOpened: typeof forceState !== 'undefined' ? forceState : !this.state.isDropDownOpened})
     }
 
     render() {

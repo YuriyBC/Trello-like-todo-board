@@ -40,7 +40,7 @@ import {
     STORAGE_HISTORY,
     STORAGE_GLOBAL_STORE,
     ALL_MODALS
-} from './utils/constants.js'
+} from './utils/constants'
 
 interface IState {
     modalCard: {

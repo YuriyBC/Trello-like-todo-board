@@ -9,7 +9,7 @@ import {
     ORANGE_COLOR,
     RED_COLOR,
     BLUE_COLOR
-} from '../utils/constants.js'
+} from '../utils/constants'
 
 
 interface IAvailableColors {
@@ -225,6 +225,6 @@ export class UpdateCardModal extends React.Component <any, any> {
                     </div>
                 </div>
             </div>
-        </div>
+        </div>;
     }
 }

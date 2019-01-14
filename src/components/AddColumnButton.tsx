@@ -1,4 +1,4 @@
-import * as React from 'react';
+import * as React from "react";
 import imgAdd from '../img/ic-add.png'
 import imgClose from '../img/ic-close.png'
 
