@@ -194,7 +194,7 @@ export class UpdateCardModal extends React.Component <any, any> {
                                placeholder={titlePlaceholder}
                                required
                                ref={this.state.elements.titleForm.ref}
-                               onChange={($ev) => this.setForm($ev, 'title')}/>
+                               onChange={(event) => this.setForm(event, 'title')}/>
                     </div>
 
                     <div className="modal-field">
@@ -205,7 +205,7 @@ export class UpdateCardModal extends React.Component <any, any> {
                                   value={this.state.text}
                                   ref={this.state.elements.messageForm.ref}
                                   placeholder={textPlaceholder}
-                                  onChange={($ev) => this.setForm($ev, 'text')}/>
+                                  onChange={(event) => this.setForm(event, 'text')}/>
                     </div>
 
                     <div className="modal-field">
