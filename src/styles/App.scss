@@ -1,0 +1,30 @@
+body {
+  margin: 0;
+  padding: 0;
+  color: #17394d;
+  font-family: Helvetica Neue, Arial, Helvetica, sans-serif;
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 400;
+  overflow: hidden;
+  height: 100vh;
+}
+
+.App {
+  background-repeat: no-repeat;
+  background-position: center top;
+  background-size: 100% 100%;
+  height: 100%;
+}
+
+.icon {
+  cursor: pointer;
+  user-select: none;
+  opacity: 0.8;
+  &:hover {
+    opacity: 0.8;
+  }
+  &:active {
+    filter: brightness(80%);
+  }
+}

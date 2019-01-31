@@ -1,0 +1,55 @@
+.column-card {
+  position: relative;
+  background-color: #fff;
+  border-radius: 3px;
+  box-shadow: 0 1px 0 rgba(9, 45, 66, .25);
+  cursor: pointer;
+  display: block;
+  margin-bottom: 8px;
+  max-width: 300px;
+  min-height: 20px;
+  position: relative;
+  text-decoration: none;
+  z-index: 1;
+  &__icon {
+    display: none;
+    position: absolute;
+    right: 10px;
+    top: 12px;
+    width: 18px;
+    height: 18px;
+    transition: 0.3s;
+    &:hover {
+      filter: brightness(80%);
+    }
+    &:active {
+      opacity: 0.7;
+    }
+  }
+  &:focus {
+    outline: none;
+    filter: brightness(80%);
+  }
+  span, p {
+    padding: 5px 10px;
+  }
+  p {
+    margin: 0;
+    word-break: break-all;
+    word-break: break-word;
+  }
+  span {
+    display: block;
+    margin: 0 0 4px;
+    overflow: hidden;
+    text-decoration: none;
+    word-wrap: break-word;
+    color: #17394d;
+    font-weight: bold;
+  }
+  &:hover, &:focus {
+    .column-card__icon {
+      display: block;
+    }
+  }
+}
